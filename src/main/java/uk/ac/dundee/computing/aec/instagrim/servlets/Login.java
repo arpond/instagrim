@@ -21,6 +21,11 @@ import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.models.User;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 
+
+/**
+ * TODO - Handle empty username field
+ */
+
 /**
  *
  * @author Administrator

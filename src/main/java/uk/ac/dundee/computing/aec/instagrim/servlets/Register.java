@@ -20,6 +20,11 @@ import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.models.User;
 
 /**
+ * TODO - Handle empty key rather than making a query(line 53)
+ * TODO - Disallow registering with a username and blank password
+ */
+
+/**
  *
  * @author Administrator
  */

@@ -40,6 +40,16 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 })
 @MultipartConfig
 
+/** 
+ * TODO - Handle when Image doesn't exist (invalid UUID line 122 see /Images/namedoesn'texist, UUID.java 194)
+ * TODO - Handle when "/Image/" and "/Image" (array out of bounds line 94)
+ * TODO - Handle when "/Images/" and "/Images" (array out of bounds line 97)
+ * TODO - Handle when "/Thumb/" and "/Thumb" (array out of bounds line 100)
+ * TODO - Handle when Thumb doesn't exist (invalid UUID line 122, UUID.java 194)
+ * TOFIX - Negative array size exception when uploading huge file (line 154)
+ * 
+ */
+
 public class Image extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -131,7 +141,6 @@ public class Image extends HttpServlet {
 
             String type = part.getContentType();
             String filename = part.getSubmittedFileName();
-            
             InputStream is = request.getPart(part.getName()).getInputStream();
             int i = is.available();
             HttpSession session=request.getSession();
@@ -141,6 +150,7 @@ public class Image extends HttpServlet {
                 username=lg.getUsername();
             }
             if (i > 0) {
+                // Watch for negative array size..
                 byte[] b = new byte[i + 1];
                 is.read(b);
                 System.out.println("Length : " + b.length);
