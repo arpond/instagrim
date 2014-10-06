@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import javax.persistence.Convert;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -41,13 +42,13 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 @MultipartConfig
 
 /** 
- * TODO - Handle when Image doesn't exist (invalid UUID line 122 see /Images/namedoesn'texist, UUID.java 194)
- * TODO - Handle when "/Image/" and "/Image" (array out of bounds line 94)
- * TODO - Handle when "/Images/" and "/Images" (array out of bounds line 97)
- * TODO - Handle when "/Thumb/" and "/Thumb" (array out of bounds line 100)
- * TODO - Handle when Thumb doesn't exist (invalid UUID line 122, UUID.java 194)
+ * TODO - Improve when Image doesn't exist (invalid UUID line 122 see /Images/namedoesn'texist, UUID.java 194)
+ * TODO - Improve when "/Image/" and "/Image" (array out of bounds line 94)
+ * TODO - Improve when "/Images/" and "/Images" (array out of bounds line 97)
+ * TODO - Improve when "/Thumb/" and "/Thumb" (array out of bounds line 100)
+ * TODO - Improve when Thumb doesn't exist (invalid UUID line 122, UUID.java 194)
+ * TODO - Improve how unrecognised file types are handled
  * TOFIX - Negative array size exception when uploading huge file (line 154)
- * 
  */
 
 public class Image extends HttpServlet {
@@ -89,7 +90,10 @@ public class Image extends HttpServlet {
             error("Bad Operator", response);
             return;
         }
-        switch (command) {
+        try
+        {
+            switch (command) 
+            {
             case 1:
                 DisplayImage(Convertors.DISPLAY_PROCESSED,args[2], response);
                 break;
@@ -101,7 +105,12 @@ public class Image extends HttpServlet {
                 break;
             default:
                 error("Bad Operator", response);
+            }
         }
+        catch (ArrayIndexOutOfBoundsException oobex)
+        {
+            error("ArrayOutOfBounds", response);
+        }  
     }
 
     private void DisplayImageList(String User, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -117,10 +126,17 @@ public class Image extends HttpServlet {
     private void DisplayImage(int type,String Image, HttpServletResponse response) throws ServletException, IOException {
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
+        Pic p;
   
-        
-        Pic p = tm.getPic(type,java.util.UUID.fromString(Image));
-        
+        try
+        {
+             p = tm.getPic(type,java.util.UUID.fromString(Image));
+        }
+        catch (IllegalArgumentException iae)
+        {
+            error("Image Not Found", response);
+            return;
+        }
         OutputStream out = response.getOutputStream();
 
         response.setContentType(p.getType());
@@ -138,20 +154,30 @@ public class Image extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         for (Part part : request.getParts()) {
             System.out.println("Part Name " + part.getName());
-
             String type = part.getContentType();
+            if (!type.equalsIgnoreCase("image/jpeg") && !type.equalsIgnoreCase("image/png"))
+            {
+                error("Unrecognised File Type", response);
+                return;
+            }
+            long size = part.getSize();
+            if (size > 104857600L)
+            {
+                error("The file size is too large", response);
+                return;
+            }
             String filename = part.getSubmittedFileName();
             InputStream is = request.getPart(part.getName()).getInputStream();
             int i = is.available();
             HttpSession session=request.getSession();
-            LoggedIn lg= (LoggedIn)session.getAttribute("LoggedIn");
+            LoggedIn lg= (LoggedIn)session.getAttribute("LoggedIn");    
             String username="majed";
             if (lg.getlogedin()){
                 username=lg.getUsername();
             }
             if (i > 0) {
                 // Watch for negative array size..
-                byte[] b = new byte[i + 1];
+                byte[] b = new byte[i+1];
                 is.read(b);
                 System.out.println("Length : " + b.length);
                 PicModel tm = new PicModel();
@@ -161,7 +187,7 @@ public class Image extends HttpServlet {
                 is.close();
             }
             RequestDispatcher rd = request.getRequestDispatcher("/upload.jsp");
-             rd.forward(request, response);
+            rd.forward(request, response);
         }
 
     }
@@ -170,7 +196,7 @@ public class Image extends HttpServlet {
 
         PrintWriter out = null;
         out = new PrintWriter(response.getOutputStream());
-        out.println("<h1>You have a na error in your input</h1>");
+        out.println("<h1>You have an error in your input</h1>");
         out.println("<h2>" + mess + "</h2>");
         out.close();
         return;

@@ -4,9 +4,6 @@
     Author     : Administrator
 --%>
 
-<%--
-    TODO - Prevent file types other than images or handle it gracefully
---%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
