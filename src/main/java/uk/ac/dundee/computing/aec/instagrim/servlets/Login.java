@@ -23,7 +23,7 @@ import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 
 
 /**
- * TODO - Handle empty username field
+ * TODO - Make empty username more graceful
  */
 
 /**
@@ -56,6 +56,17 @@ public class Login extends HttpServlet {
         String username=request.getParameter("username");
         String password=request.getParameter("password");
         
+        if (username.equals(""))
+        {
+            error("You must enter a username",response);
+            return;
+        }
+        else if (password.equals(""))
+        {
+            error("You must enter a passweord", response);
+            return;
+        }
+        
         User us=new User();
         us.setCluster(cluster);
         boolean isValid=us.IsValidUser(username, password);
@@ -87,5 +98,14 @@ public class Login extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+    
+     private void error(String mess, HttpServletResponse response) throws ServletException, IOException {
+        PrintWriter out = null;
+        out = new PrintWriter(response.getOutputStream());
+        out.println("<h1>You have a na error in your input</h1>");
+        out.println("<h2>" + mess + "</h2>");
+        out.close();
+        return;
+    }
 
 }
