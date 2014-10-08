@@ -87,7 +87,7 @@ public class Image extends HttpServlet {
         try {
             command = (Integer) CommandsMap.get(args[1]);
         } catch (Exception et) {
-            error("Bad Operator", response);
+            error("Bad Operator", response, request);
             return;
         }
         try
@@ -95,21 +95,21 @@ public class Image extends HttpServlet {
             switch (command) 
             {
             case 1:
-                DisplayImage(Convertors.DISPLAY_PROCESSED,args[2], response);
+                DisplayImage(Convertors.DISPLAY_PROCESSED,args[2], response, request);
                 break;
             case 2:
                 DisplayImageList(args[2], request, response);
                 break;
             case 3:
-                DisplayImage(Convertors.DISPLAY_THUMB,args[2],  response);
+                DisplayImage(Convertors.DISPLAY_THUMB,args[2],  response , request);
                 break;
             default:
-                error("Bad Operator", response);
+                error("Bad Operator", response, request);
             }
         }
         catch (ArrayIndexOutOfBoundsException oobex)
         {
-            error("ArrayOutOfBounds", response);
+            error("ArrayOutOfBounds", response, request);
         }  
     }
 
@@ -123,7 +123,7 @@ public class Image extends HttpServlet {
 
     }
 
-    private void DisplayImage(int type,String Image, HttpServletResponse response) throws ServletException, IOException {
+    private void DisplayImage(int type,String Image, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
         Pic p;
@@ -134,7 +134,7 @@ public class Image extends HttpServlet {
         }
         catch (IllegalArgumentException iae)
         {
-            error("Image Not Found", response);
+            error("Image Not Found", response, request);
             return;
         }
         OutputStream out = response.getOutputStream();
@@ -157,13 +157,13 @@ public class Image extends HttpServlet {
             String type = part.getContentType();
             if (!type.equalsIgnoreCase("image/jpeg") && !type.equalsIgnoreCase("image/png"))
             {
-                error("Unrecognised File Type", response);
+                error("Unrecognised File Type", response, request);
                 return;
             }
             long size = part.getSize();
             if (size > 104857600L)
             {
-                error("The file size is too large", response);
+                error("The file size is too large", response, request);
                 return;
             }
             String filename = part.getSubmittedFileName();
@@ -192,13 +192,10 @@ public class Image extends HttpServlet {
 
     }
 
-    private void error(String mess, HttpServletResponse response) throws ServletException, IOException {
-
-        PrintWriter out = null;
-        out = new PrintWriter(response.getOutputStream());
-        out.println("<h1>You have an error in your input</h1>");
-        out.println("<h2>" + mess + "</h2>");
-        out.close();
+    private void error(String mess, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
+        request.setAttribute("error", mess);
+        RequestDispatcher view = request.getRequestDispatcher("/error.jsp");
+        view.forward(request, response);
         return;
     }
 }
