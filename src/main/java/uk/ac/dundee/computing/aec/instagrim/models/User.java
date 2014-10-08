@@ -27,6 +27,8 @@ public class User {
         
     }
     
+    // Check if username is already in use?
+    
     public boolean RegisterUser(String username, String Password){
         AeSimpleSHA1 sha1handler=  new AeSimpleSHA1();
         String EncodedPassword=null;
@@ -47,6 +49,8 @@ public class User {
         
         return true;
     }
+    
+    // Improve no images returned
     
     public boolean IsValidUser(String username, String Password){
         AeSimpleSHA1 sha1handler=  new AeSimpleSHA1();
