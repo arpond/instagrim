@@ -65,7 +65,21 @@ public class Register extends HttpServlet {
         
         User us=new User();
         us.setCluster(cluster);
-        us.RegisterUser(username, password);
+        String regResult = us.RegisterUser(username, password);
+ 
+        if (regResult.equals("success"))
+        {
+            request.setAttribute("message", "Registeration Succesful");
+            RequestDispatcher view = request.getRequestDispatcher("/message.jsp");
+            view.forward(request, response);
+        }
+        else
+        {
+            request.setAttribute("error", "There was a problem with your registation - " + regResult );
+            RequestDispatcher view = request.getRequestDispatcher("/error.jsp");
+            view.forward(request, response);
+            
+        }
         
 	response.sendRedirect("/Instagrim");
         

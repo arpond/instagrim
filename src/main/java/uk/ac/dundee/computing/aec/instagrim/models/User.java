@@ -29,25 +29,34 @@ public class User {
     
     // Check if username is already in use?
     
-    public boolean RegisterUser(String username, String Password){
+    public String RegisterUser(String username, String Password){
         AeSimpleSHA1 sha1handler=  new AeSimpleSHA1();
         String EncodedPassword=null;
         try {
             EncodedPassword= sha1handler.SHA1(Password);
         }catch (UnsupportedEncodingException | NoSuchAlgorithmException et){
             System.out.println("Can't check your password");
-            return false;
+            return "Can't encode your password";
         }
         Session session = cluster.connect("instagrim");
-        PreparedStatement ps = session.prepare("insert into userprofiles (login,password) Values(?,?)");
+        PreparedStatement psUserCheck = session.prepare("select login from userprofiles where login =?");
+        PreparedStatement psInsertUser = session.prepare("insert into userprofiles (login,password) Values(?,?)");
        
-        BoundStatement boundStatement = new BoundStatement(ps);
-        session.execute( // this is where the query is executed
-                boundStatement.bind( // here you are binding the 'boundStatement'
+        BoundStatement bsUserCheck = new BoundStatement(psUserCheck);     
+        BoundStatement bsInsertUser = new BoundStatement(psInsertUser);
+        
+        ResultSet rs = session.execute(bsUserCheck.bind(username));
+        
+        if (!rs.isExhausted())
+        {
+            return "Username already exists";
+        }
+        session.execute(// this is where the query is executed
+                        bsInsertUser.bind( // here you are binding the 'boundStatement'
                         username,EncodedPassword));
         //We are assuming this always works.  Also a transaction would be good here !
         
-        return true;
+        return "success";
     }
     
     // Improve no images returned
