@@ -86,6 +86,52 @@ public class PicModel {
             System.out.println("Error --> " + ex);
         }
     }
+    
+    public String picDelete(String user, java.util.UUID picid)
+    {
+        try {
+            Session session = cluster.connect("instagrim");
+
+            //PreparedStatement psDeletePic = session.prepare("insert into pics ( picid, image,thumb,processed, user, interaction_time,imagelength,thumblength,processedlength,type,name) values(?,?,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement psInsertedTime = session.prepare("SELECT interaction_time, user FROM pics WHERE picid = ?");
+            PreparedStatement psDeletePic = session.prepare("DELETE FROM pics WHERE picid = ?");
+            PreparedStatement psDeletePicUserPicList = session.prepare("DELETE FROM userpiclist WHERE user = ? AND pic_added = ?");
+            BoundStatement bsInsertedTime = new BoundStatement(psInsertedTime);
+            BoundStatement bsDeletePic = new BoundStatement(psDeletePic);
+            BoundStatement bsDeletePicUserPicList = new BoundStatement(psDeletePicUserPicList);
+            
+            ResultSet rs = session.execute(bsInsertedTime.bind(picid));
+            Date dateAdded = new Date();
+            String owner = "";
+            if (rs.isExhausted()) 
+            {
+                session.close();
+                return "no rows";
+            } 
+            else 
+            {
+                for (Row row : rs) 
+                {
+                    dateAdded = row.getDate("interaction_time");
+                    owner = row.getString("user");
+                }
+            }
+            if (owner.equals(user))
+            {
+                session.execute(bsDeletePic.bind(picid));
+                session.execute(bsDeletePicUserPicList.bind(user, dateAdded));
+                session.close();
+                return "success";
+            }
+            session.close();
+            return "owner != user";
+        }
+        catch (Exception ex)
+        {
+            return ex.getMessage();
+        }
+    }
+    
 
     public byte[] picresize(String picid,String type) {
         try {

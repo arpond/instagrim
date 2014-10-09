@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Convert;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -37,7 +39,9 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
     "/Image/*",
     "/Thumb/*",
     "/Images",
-    "/Images/*"
+    "/Images/*",
+    "/Delete/",
+    "/Delete/*"
 })
 @MultipartConfig
 
@@ -68,6 +72,7 @@ public class Image extends HttpServlet {
         CommandsMap.put("Image", 1);
         CommandsMap.put("Images", 2);
         CommandsMap.put("Thumb", 3);
+        CommandsMap.put("Delete", 4);
 
     }
 
@@ -87,7 +92,7 @@ public class Image extends HttpServlet {
         try {
             command = (Integer) CommandsMap.get(args[1]);
         } catch (Exception et) {
-            error("Bad Operator", response, request);
+            error("Bad Operator",  request, response);
             return;
         }
         try
@@ -101,15 +106,18 @@ public class Image extends HttpServlet {
                 DisplayImageList(args[2], request, response);
                 break;
             case 3:
-                DisplayImage(Convertors.DISPLAY_THUMB,args[2],  response , request);
+                DisplayImage(Convertors.DISPLAY_THUMB,args[2],  response, request);
+                break;
+            case 4:
+                DeleteImage(args[2], request, response);
                 break;
             default:
-                error("Bad Operator", response, request);
+                error("Bad Operator",  request, response);
             }
         }
         catch (ArrayIndexOutOfBoundsException oobex)
         {
-            error("ArrayOutOfBounds", response, request);
+            error("ArrayOutOfBounds",  request, response);
         }  
     }
 
@@ -123,6 +131,28 @@ public class Image extends HttpServlet {
 
     }
 
+    private void DeleteImage(String picid, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        PicModel tm = new PicModel();
+        tm.setCluster(cluster);
+        HttpSession session = request.getSession();
+        LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+        String user = lg.getUsername();
+        //boolean success = tm.picDelete(user, picid);
+        String success = tm.picDelete(user, java.util.UUID.fromString(picid));  
+        if (!success.equals("success"))
+        {
+            error("Image Not Found\n" + success, request, response);
+            return;
+        }
+        else
+        {
+            request.setAttribute("message", "Image Successfully Deleted");
+            RequestDispatcher view = request.getRequestDispatcher("/message.jsp");
+            view.forward(request, response);
+        }
+    }
+    
     private void DisplayImage(int type,String Image, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
@@ -134,7 +164,7 @@ public class Image extends HttpServlet {
         }
         catch (IllegalArgumentException iae)
         {
-            error("Image Not Found", response, request);
+            error("Image Not Found",  request, response);
             return;
         }
         OutputStream out = response.getOutputStream();
@@ -157,13 +187,13 @@ public class Image extends HttpServlet {
             String type = part.getContentType();
             if (!type.equalsIgnoreCase("image/jpeg") && !type.equalsIgnoreCase("image/png"))
             {
-                error("Unrecognised File Type", response, request);
+                error("Unrecognised File Type",  request, response);
                 return;
             }
             long size = part.getSize();
             if (size > 104857600L)
             {
-                error("The file size is too large", response, request);
+                error("The file size is too large",  request, response);
                 return;
             }
             String filename = part.getSubmittedFileName();
@@ -192,7 +222,7 @@ public class Image extends HttpServlet {
 
     }
 
-    private void error(String mess, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
+    private void error(String mess, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("error", mess);
         RequestDispatcher view = request.getRequestDispatcher("/error.jsp");
         view.forward(request, response);
