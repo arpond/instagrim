@@ -24,6 +24,6 @@
               out.print(message);
             %>
         </p>
-        <p>You will be redirected to the index in 5 seconds...</p>
+        <p>You will be redirected to the index in 5 seconds... or return to the <a href="/Instagrim/">index</a></p>
     </body>
 </html>

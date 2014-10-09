@@ -87,6 +87,13 @@ public class PicModel {
         }
     }
     
+    /**
+     * Deletes the appropriate image from the database
+     * 
+     * @param user The user the image belongs to
+     * @param picid The UUID of the picture
+     * @return If the action was successful or not
+     */
     public String picDelete(String user, java.util.UUID picid)
     {
         try {

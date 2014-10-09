@@ -128,29 +128,6 @@ public class Image extends HttpServlet {
         RequestDispatcher rd = request.getRequestDispatcher("/UsersPics.jsp");
         request.setAttribute("Pics", lsPics);
         rd.forward(request, response);
-
-    }
-
-    private void DeleteImage(String picid, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        PicModel tm = new PicModel();
-        tm.setCluster(cluster);
-        HttpSession session = request.getSession();
-        LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
-        String user = lg.getUsername();
-        //boolean success = tm.picDelete(user, picid);
-        String success = tm.picDelete(user, java.util.UUID.fromString(picid));  
-        if (!success.equals("success"))
-        {
-            error("Image Not Found\n" + success, request, response);
-            return;
-        }
-        else
-        {
-            request.setAttribute("message", "Image Successfully Deleted");
-            RequestDispatcher view = request.getRequestDispatcher("/message.jsp");
-            view.forward(request, response);
-        }
     }
     
     private void DisplayImage(int type,String Image, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
@@ -179,6 +156,37 @@ public class Image extends HttpServlet {
             out.write(buffer, 0, length);
         }
         out.close();
+    }
+    
+    /**
+     * Function for deleting an image
+     * 
+     * @param picid The id of the image to delete
+     * @param request the http servlet request
+     * @param response the http servlet response
+     * @throws ServletException
+     * @throws IOException 
+     */
+    private void DeleteImage(String picid, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        PicModel tm = new PicModel();
+        tm.setCluster(cluster);
+        HttpSession session = request.getSession();
+        LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+        String user = lg.getUsername();
+        //boolean success = tm.picDelete(user, picid);
+        String success = tm.picDelete(user, java.util.UUID.fromString(picid));  
+        if (!success.equals("success"))
+        {
+            error("Image Not Found\n" + success, request, response);
+            return;
+        }
+        else
+        {
+            request.setAttribute("message", "Image Successfully Deleted");
+            RequestDispatcher view = request.getRequestDispatcher("/message.jsp");
+            view.forward(request, response);
+        }
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

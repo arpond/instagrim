@@ -4,6 +4,10 @@
  * and open the template in the editor.
  */
 
+/**
+ * TODO - Unique key identifier for each session?
+ */
+
 package uk.ac.dundee.computing.aec.instagrim.stores;
 
 /**
