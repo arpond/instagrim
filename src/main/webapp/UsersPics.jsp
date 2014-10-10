@@ -32,6 +32,8 @@
             <h1>Your Pics</h1>
         <%
             java.util.LinkedList<Pic> lsPics = (java.util.LinkedList<Pic>) request.getAttribute("Pics");
+            String owner = (String) request.getAttribute("Owner");
+            boolean match = (boolean) request.getAttribute("Match");
             if (lsPics == null) {
         %>
         <p>No Pictures found</p>
@@ -44,8 +46,11 @@
 
         %>
         <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
-        <a href="/Instagrim/Delete/<%=p.getSUUID()%>" >Delete</a><br/><%
-
+        <%
+                if (match)
+                {%>
+        <a href="/Instagrim/Delete/<%=owner%>/<%=p.getSUUID()%>" >Delete</a><br/>
+                <%}
             }
             }
         %>

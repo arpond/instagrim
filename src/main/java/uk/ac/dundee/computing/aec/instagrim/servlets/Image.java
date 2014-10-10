@@ -109,7 +109,7 @@ public class Image extends HttpServlet {
                 DisplayImage(Convertors.DISPLAY_THUMB,args[2],  response, request);
                 break;
             case 4:
-                DeleteImage(args[2], request, response);
+                DeleteImage(args[2], args[3], request, response);
                 break;
             default:
                 error("Bad Operator",  request, response);
@@ -121,11 +121,34 @@ public class Image extends HttpServlet {
         }  
     }
 
-    private void DisplayImageList(String User, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void DisplayImageList(String owner, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
-        java.util.LinkedList<Pic> lsPics = tm.getPicsForUser(User);
+        java.util.LinkedList<Pic> lsPics = tm.getPicsForUser(owner);
+        String user;
+        
+        HttpSession session = request.getSession();
+        LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+        if (lg == null || !lg.getlogedin())
+        {
+            user = "";
+        }
+        else
+        {
+            user = lg.getUsername();
+        }
+        
         RequestDispatcher rd = request.getRequestDispatcher("/UsersPics.jsp");
+     
+        if (user.equals(owner))
+        {
+            request.setAttribute("Match",true);
+        }
+        else
+        {
+            request.setAttribute("Match", false);
+        }
+        request.setAttribute("Owner", owner);
         request.setAttribute("Pics", lsPics);
         rd.forward(request, response);
     }
@@ -167,13 +190,24 @@ public class Image extends HttpServlet {
      * @throws ServletException
      * @throws IOException 
      */
-    private void DeleteImage(String picid, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    private void DeleteImage(String picid, String owner, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
         HttpSession session = request.getSession();
         LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+        if (lg == null || !lg.getlogedin())
+        {
+            error("You are not logged in!", request, response);
+            return;
+        }
+        
         String user = lg.getUsername();
+        if (!user.equals(owner))
+        {
+            error("You do not have permission to do that!", request, response);
+            return;
+        }
         //boolean success = tm.picDelete(user, picid);
         String success = tm.picDelete(user, java.util.UUID.fromString(picid));  
         if (!success.equals("success"))
