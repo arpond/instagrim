@@ -20,7 +20,8 @@ import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.models.User;
 
 /**
- * TODO - More Graceful Errors
+ * TODO - Display errors alongside fields with errors in it.
+ * TODO - Also pass correct fields apart from password
  */
 
 /**
@@ -51,6 +52,10 @@ public class Register extends HttpServlet {
             throws ServletException, IOException {
         String username=request.getParameter("username");
         String password=request.getParameter("password");
+        String confirm = request.getParameter("confirmpass");
+        //String firstname=request.getParameter("firstname");
+        //String lastname=request.getParameter("lastname");
+        String email=request.getParameter("email");
         
         if (username.equals(""))
         {
@@ -62,10 +67,20 @@ public class Register extends HttpServlet {
             error("You must enter a passweord", response);
             return;
         }
+        else if (!password.equals(confirm))
+        {
+            error("Your passwords do not match", response);
+            return;
+        }
+        else if (email.equals(""))
+        {
+            error("You must enter an email address", response);
+            return;
+        }
         
         User us=new User();
         us.setCluster(cluster);
-        String regResult = us.RegisterUser(username, password);
+        String regResult = us.RegisterUser(username, password, email);
  
         if (regResult.equals("success"))
         {
@@ -78,7 +93,6 @@ public class Register extends HttpServlet {
             request.setAttribute("error", "There was a problem with your registation - " + regResult );
             RequestDispatcher view = request.getRequestDispatcher("/error.jsp");
             view.forward(request, response);
-            
         }
         
 	response.sendRedirect("/Instagrim");

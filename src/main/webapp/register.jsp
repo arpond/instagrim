@@ -2,6 +2,8 @@
     Document   : register.jsp
     Created on : Sep 28, 2014, 6:29:51 PM
     Author     : Administrator
+
+    TODO - Add space for errors for redirect to here from failed registration
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -30,6 +32,8 @@
                 <ul>
                     <li>User Name <input type="text" name="username"></li>
                     <li>Password <input type="password" name="password"></li>
+                    <li>Confirm Password <input type="password" name="confirmpass"></li>
+                    <li>Email  <input type="text" name="email"></li>
                 </ul>
                 <br/>
                 <input type="submit" value="Regidter"> 
