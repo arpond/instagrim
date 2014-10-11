@@ -14,6 +14,8 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Set;
+import java.util.HashSet;
 import uk.ac.dundee.computing.aec.instagrim.lib.AeSimpleSHA1;
 import uk.ac.dundee.computing.aec.instagrim.lib.simpleSHA256;
 import uk.ac.dundee.computing.aec.instagrim.lib.saltGenerator;
@@ -60,12 +62,16 @@ public class User {
 
         Session session = cluster.connect("instagrim");
         PreparedStatement psUserCheck = session.prepare("select login from userprofiles where login =?");
-        PreparedStatement psInsertUser = session.prepare("insert into userprofiles (login,password,salt,email) Values(?,?,?,{?})");
+        PreparedStatement psInsertUser = session.prepare("insert into userprofiles (login,password,salt,email) Values(?,?,?,?)");
        
         BoundStatement bsUserCheck = new BoundStatement(psUserCheck);     
         BoundStatement bsInsertUser = new BoundStatement(psInsertUser);
         
         ResultSet rs = session.execute(bsUserCheck.bind(username));
+        
+        Set<String> emails = new HashSet<String>();
+        
+        emails.add(email);
         
         if (!rs.isExhausted())
         {
@@ -73,7 +79,7 @@ public class User {
         }
         session.execute(// this is where the query is executed
 bsInsertUser.bind(// here you are binding the 'boundStatement'
-                        username,encodedPassword,salt,email));
+                        username,encodedPassword,salt,emails));
         //We are assuming this always works.  Also a transaction would be good here !
         
         return "success";
