@@ -11,6 +11,8 @@ public final class Keyspaces {
 
     }
 
+    // TODO - Change user table to include salt
+    
     public static void SetUpKeySpaces(Cluster c) {
         try {
             //Add some keyspaces here
@@ -25,7 +27,7 @@ public final class Keyspaces {
                     + " processed blob,"
                     + " imagelength int,"
                     + " thumblength int,"
-                    + "  processedlength int,"
+                    + " processedlength int,"
                     + " type  varchar,"
                     + " name  varchar,"
                     + " PRIMARY KEY (picid)"
@@ -43,7 +45,10 @@ public final class Keyspaces {
                     + "  );";
             String CreateUserProfile = "CREATE TABLE if not exists instagrim.userprofiles (\n"
                     + "      login text PRIMARY KEY,\n"
-                     + "     password text,\n"
+                    + "      password text,\n"
+                    + "      salt text,\n"
+                    + "      profilepic blob,\n"
+                    + "      profilepiclength int,\n"
                     + "      first_name text,\n"
                     + "      last_name text,\n"
                     + "      email set<text>,\n"
@@ -69,7 +74,7 @@ public final class Keyspaces {
                 SimpleStatement cqlQuery = new SimpleStatement(CreatePicTable);
                 session.execute(cqlQuery);
             } catch (Exception et) {
-                System.out.println("Can't create tweet table " + et);
+                System.out.println("Can't create pic table " + et);
             }
             System.out.println("" + Createuserpiclist);
 
