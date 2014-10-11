@@ -12,11 +12,11 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * Simple SHA256 hash
- * @author Andrew
+ * 
  */
 public class simpleSHA256 {
     
-    private static String convertToHex(byte[] data) { 
+    public static String convertToHex(byte[] data) { 
         StringBuffer buf = new StringBuffer();
         for (int i = 0; i < data.length; i++) { 
             int halfbyte = (data[i] >>> 4) & 0x0F;
@@ -37,7 +37,8 @@ public class simpleSHA256 {
         MessageDigest  md;
         md = MessageDigest.getInstance("SHA-256");
         md.update(text.getBytes("iso-8859-1"));
-        byte[] sha256Hash = md.digest();
+        byte[] sha256Hash = new byte[40];
+        sha256Hash = md.digest();
         return convertToHex(sha256Hash);
     }
 }
