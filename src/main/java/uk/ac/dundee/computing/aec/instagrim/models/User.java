@@ -14,12 +14,14 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.Set;
 import java.util.HashSet;
 import uk.ac.dundee.computing.aec.instagrim.lib.AeSimpleSHA1;
 import uk.ac.dundee.computing.aec.instagrim.lib.simpleSHA256;
 import uk.ac.dundee.computing.aec.instagrim.lib.saltGenerator;
 import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
+import uk.ac.dundee.computing.aec.instagrim.stores.UserDetails;
 
 /**
  *
@@ -62,24 +64,25 @@ public class User {
 
         Session session = cluster.connect("instagrim");
         PreparedStatement psUserCheck = session.prepare("select login from userprofiles where login =?");
-        PreparedStatement psInsertUser = session.prepare("insert into userprofiles (login,password,salt,email) Values(?,?,?,?)");
+        PreparedStatement psInsertUser = session.prepare("insert into userprofiles (login,password,salt,email,joined) Values(?,?,?,?,?)");
        
         BoundStatement bsUserCheck = new BoundStatement(psUserCheck);     
         BoundStatement bsInsertUser = new BoundStatement(psInsertUser);
         
         ResultSet rs = session.execute(bsUserCheck.bind(username));
         
+        Date dateJoined = new Date();
         Set<String> emails = new HashSet<String>();
-        
         emails.add(email);
         
         if (!rs.isExhausted())
         {
             return "Username already exists";
         }
+        
         session.execute(// this is where the query is executed
 bsInsertUser.bind(// here you are binding the 'boundStatement'
-                        username,encodedPassword,salt,emails));
+                        username,encodedPassword,salt,emails,dateJoined));
         //We are assuming this always works.  Also a transaction would be good here !
         
         return "success";
@@ -138,6 +141,37 @@ bsInsertUser.bind(// here you are binding the 'boundStatement'
     }
        public void setCluster(Cluster cluster) {
         this.cluster = cluster;
+    }
+       
+    public UserDetails getUserDetails(String username)
+    {
+        Session session = cluster.connect("instagrim");
+       
+        
+        PreparedStatement ps = session.prepare("select * from userprofiles where login =?");
+        ResultSet rs = null;
+        BoundStatement bs = new BoundStatement(ps);
+        
+        rs = session.execute(bs.bind(username));
+        UserDetails userDetails = new UserDetails();
+        if (rs.isExhausted())
+        {
+            System.out.println("User not found");
+            return null;
+        }
+        else
+        {
+            for (Row row : rs)
+            {
+                String login = row.getString("login");
+                String firstname = row.getString("first_name");
+                String lastname = row.getString("last_name");
+                Date joined = row.getDate("joined");
+                Set<String> emails = row.getSet("email", String.class);
+                userDetails.setUser(login, firstname, lastname, joined, emails);
+            }
+        }       
+        return userDetails;
     }
 
     
