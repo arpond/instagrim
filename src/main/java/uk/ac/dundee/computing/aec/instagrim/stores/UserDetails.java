@@ -71,4 +71,13 @@ public class UserDetails {
         this.joined = joined;
         this.emails = emails;
     }
+    
+    @Override public String toString()
+    {
+        return "Username: " + username +
+               ", First Name: " + firstname +
+               ", Last Name: " + lastname +
+               ", joined: " + joined.toString();
+    }
+    
 }

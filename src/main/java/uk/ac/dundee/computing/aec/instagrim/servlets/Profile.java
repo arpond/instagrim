@@ -16,9 +16,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.models.User;
+import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 import uk.ac.dundee.computing.aec.instagrim.stores.UserDetails;
 
 /**
@@ -102,7 +104,79 @@ public class Profile extends HttpServlet {
     
     private void editProfile(String owner, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
+        User user = new User();
+        user.setCluster(cluster);
         
+        if (!userMatch(owner,request))
+        {
+            error("You do not have permission to do that!", request, response);
+            return;
+        }
+                
+        UserDetails userDetails = user.getUserDetails(owner);
+        request.setAttribute("details",userDetails);
+        RequestDispatcher view = request.getRequestDispatcher("/editProfile.jsp");
+        view.forward(request, response);
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        //String username=request.getParameter("username");
+        //String password=request.getParameter("password");
+        String owner = request.getParameter("owner");
+        String firstname = request.getParameter("firstname");
+        String lastname = request.getParameter("lastname");
+        String mails = request.getParameter("email");
+                     
+        if (firstname == null)
+        {
+            firstname = "";
+        }
+        if (lastname == null)
+        {
+            lastname = "";
+        }
+        if (mails == null)
+        {
+            mails = "";
+        }
+        
+        User us=new User();
+        us.setCluster(cluster);
+        
+        if (!userMatch(owner,request))
+        {
+            error("You do not have permission to do that!", request, response);
+            return;
+        }
+        
+        HttpSession session=request.getSession();
+        System.out.println("Session in servlet "+session);
+        LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+        String current = lg.getUsername();
+               
+        us.updateUserDetails(current, firstname, lastname, mails);
+        response.sendRedirect("/Instagrim/Profile/View/" + owner);
+    }
+    
+    private boolean userMatch(String owner, HttpServletRequest request)
+    {
+        HttpSession session = request.getSession();
+            
+        LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+        if (lg == null || !lg.getlogedin())
+        {
+            return false;
+        }
+        
+        String current = lg.getUsername();
+        if (!current.equals(owner))
+        {
+            return false;
+        }
+        return true;
     }
     
     private void error(String mess, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -147,7 +147,7 @@ bsInsertUser.bind(// here you are binding the 'boundStatement'
     {
         Session session = cluster.connect("instagrim");
        
-        
+        System.out.println(username);
         PreparedStatement ps = session.prepare("select * from userprofiles where login =?");
         ResultSet rs = null;
         BoundStatement bs = new BoundStatement(ps);
@@ -156,7 +156,7 @@ bsInsertUser.bind(// here you are binding the 'boundStatement'
         UserDetails userDetails = new UserDetails();
         if (rs.isExhausted())
         {
-            System.out.println("User not found");
+            System.out.println("User not found - " + rs.isExhausted());
             return null;
         }
         else
@@ -170,8 +170,36 @@ bsInsertUser.bind(// here you are binding the 'boundStatement'
                 Set<String> emails = row.getSet("email", String.class);
                 userDetails.setUser(login, firstname, lastname, joined, emails);
             }
-        }       
+        }
+        
+        System.out.println("User details: " + userDetails.toString());
+        
         return userDetails;
+    }
+    
+    public Boolean updateUserDetails(String username, String firstname, String lastname, String emails)
+    {
+        Session session = cluster.connect("instagrim");
+       
+        System.out.println(username);
+        System.out.println(firstname);
+        System.out.println(lastname);
+        System.out.println(emails);
+        PreparedStatement ps = session.prepare("Update userprofiles set first_name = ?, last_name = ?, email = ? where login =?");
+        ResultSet rs = null;
+        BoundStatement bs = new BoundStatement(ps);
+        
+        String[] emailData = emails.split(";");       
+        HashSet<String> mails = new HashSet<String>();
+        
+        for (String mail : emailData)
+        {
+            mails.add(mail);
+        }
+        
+        session.execute(bs.bind(firstname,lastname,mails,username));
+        
+        return true;
     }
 
     
