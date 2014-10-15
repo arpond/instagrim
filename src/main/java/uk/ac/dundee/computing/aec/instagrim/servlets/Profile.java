@@ -90,16 +90,21 @@ public class Profile extends HttpServlet {
     {
         User user = new User();
         user.setCluster(cluster);
+        
+        System.out.println(owner);
         UserDetails userDetails = user.getUserDetails(owner);
+        System.out.println(userDetails);
+        
         
         if (userDetails == null)
         {
+            System.out.println("Big bad error!!");
             error("User not found", request, response);
             return;
         }
         request.setAttribute("details",userDetails);
         RequestDispatcher view = request.getRequestDispatcher("/viewProfile.jsp");
-        view.forward(request, response);
+        view.include(request, response);
     }
     
     private void editProfile(String owner, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
