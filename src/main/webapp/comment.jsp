@@ -48,12 +48,13 @@
             }
         %>
         
-        <form method="POST"  action="Comments">
+        <form method="POST"  action="/Instagrim/AddComment">
             <textarea name="comment" cols="50" rows="5">
             Enter your comment
             </textarea>
             <br/>
-            <input type="submit" value="Comment"> 
+            <input type="submit" value="AddComment"> 
+            <input type="hidden" name="picID" value="<%=picID%>">
         </form>
     </body>
 </html>

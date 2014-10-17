@@ -29,6 +29,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
+import uk.ac.dundee.computing.aec.instagrim.lib.Error;
 import uk.ac.dundee.computing.aec.instagrim.models.PicModel;
 import uk.ac.dundee.computing.aec.instagrim.models.CommentModel;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
@@ -106,7 +107,7 @@ public class Image extends HttpServlet {
                 command = (Integer) CommandsMap.get(args[1]);
             }
         } catch (Exception et) {
-            error("Bad Operator",  request, response);
+            Error.error("Bad Operator",  request, response);
             return;
         }
         System.out.println("Command: " + command);
@@ -130,12 +131,12 @@ public class Image extends HttpServlet {
                 DisplayComments(Convertors.DISPLAY_COMMENT,args[3],  response, request);
                 break;
             default:
-                error("Bad Operator",  request, response);
+                Error.error("Bad Operator",  request, response);
             }
         }
         catch (ArrayIndexOutOfBoundsException oobex)
         {
-            error("ArrayOutOfBounds",  request, response);
+            Error.error("ArrayOutOfBounds",  request, response);
         }  
     }
 
@@ -190,7 +191,7 @@ public class Image extends HttpServlet {
         }
         catch (IllegalArgumentException iae)
         {
-            error("Image Not Found",  request, response);
+            Error.error("Image Not Found",  request, response);
             return;
         }
         OutputStream out = response.getOutputStream();
@@ -209,26 +210,11 @@ public class Image extends HttpServlet {
     public void DisplayComments(int type,String image, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException
     {
         System.out.println("Comments");
-        
-        //PrintWriter outPR = null;
-        //outPR = new PrintWriter(response.getOutputStream());
+
         CommentModel cm = new CommentModel();
         cm.setCluster(cluster);
         ArrayList<Comment> comments = cm.getComments(java.util.UUID.fromString(image));
-        /*if (comments == null)
-        {
-            outPR.println("<h3>No comments</h3>");
-        }
-        else
-        {
-            for (Comment comment : comments)
-            {
-                outPR.println("<h3>" + comment.getAuthor() + " wrote: </h3>");
-                outPR.println("<p> " + comment.getComment() + " </p>");
-                outPR.println("<h3>On: " + comment.getWrittenOn().toString() + "</h3>");
-            }
-        }
-        outPR.close();*/
+
         request.setAttribute("comments",comments);
         request.setAttribute("picture",image);
         RequestDispatcher view = request.getRequestDispatcher("/comment.jsp");
@@ -253,7 +239,7 @@ public class Image extends HttpServlet {
         LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
         if (lg == null || !lg.getlogedin())
         {
-            error("You are not logged in!", request, response);
+            Error.error("You are not logged in!", request, response);
             return;
         }
         
@@ -261,7 +247,7 @@ public class Image extends HttpServlet {
         System.out.println("Owner: " + owner + " User: " + user);
         if (!user.equals(owner))
         {
-            error("You do not have permission to do that!", request, response);
+            Error.error("You do not have permission to do that!", request, response);
             return;
         }
         //boolean success = tm.picDelete(user, picid);
@@ -269,7 +255,7 @@ public class Image extends HttpServlet {
         String success = tm.picDelete(user, java.util.UUID.fromString(picid));  
         if (!success.equals("success"))
         {
-            error("Image Not Found\n" + success, request, response);
+            Error.error("Image Not Found\n" + success, request, response);
             return;
         }
         else
@@ -286,13 +272,13 @@ public class Image extends HttpServlet {
             String type = part.getContentType();
             if (!type.equalsIgnoreCase("image/jpeg") && !type.equalsIgnoreCase("image/png"))
             {
-                error("Unrecognised File Type",  request, response);
+                Error.error("Unrecognised File Type",  request, response);
                 return;
             }
             long size = part.getSize();
             if (size > 104857600L)
             {
-                error("The file size is too large",  request, response);
+                Error.error("The file size is too large",  request, response);
                 return;
             }
             String filename = part.getSubmittedFileName();
@@ -319,12 +305,5 @@ public class Image extends HttpServlet {
             rd.forward(request, response);
         }
 
-    }
-
-    private void error(String mess, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("error", mess);
-        RequestDispatcher view = request.getRequestDispatcher("/error.jsp");
-        view.forward(request, response);
-        return;
     }
 }
