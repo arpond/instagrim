@@ -8,8 +8,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Date;
 import javax.persistence.Convert;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -28,8 +30,10 @@ import org.apache.commons.fileupload.util.Streams;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.models.PicModel;
+import uk.ac.dundee.computing.aec.instagrim.models.CommentModel;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
+import uk.ac.dundee.computing.aec.instagrim.stores.Comment;
 
 /**
  * Servlet implementation class Image
@@ -41,7 +45,9 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
     "/Images",
     "/Images/*",
     "/Delete/",
-    "/Delete/*"
+    "/Delete/*",
+    "/Comments/",
+    "/Comments/*"
 })
 @MultipartConfig
 
@@ -73,6 +79,7 @@ public class Image extends HttpServlet {
         CommandsMap.put("Images", 2);
         CommandsMap.put("Thumb", 3);
         CommandsMap.put("Delete", 4);
+        CommandsMap.put("Comments", 5);
 
     }
 
@@ -90,11 +97,19 @@ public class Image extends HttpServlet {
         String args[] = Convertors.SplitRequestPath(request);
         int command;
         try {
-            command = (Integer) CommandsMap.get(args[1]);
+            try
+            {
+                command = (Integer) CommandsMap.get(args[2]);
+            }
+            catch (Exception et)
+            {
+                command = (Integer) CommandsMap.get(args[1]);
+            }
         } catch (Exception et) {
             error("Bad Operator",  request, response);
             return;
         }
+        System.out.println("Command: " + command);
         try
         {
             switch (command) 
@@ -110,6 +125,9 @@ public class Image extends HttpServlet {
                 break;
             case 4:
                 DeleteImage(args[3], args[2], request, response);
+                break;
+            case 5:
+                DisplayComments(Convertors.DISPLAY_COMMENT,args[3],  response, request);
                 break;
             default:
                 error("Bad Operator",  request, response);
@@ -160,7 +178,15 @@ public class Image extends HttpServlet {
   
         try
         {
-             p = tm.getPic(type,java.util.UUID.fromString(Image));
+            p = tm.getPic(type,java.util.UUID.fromString(Image));
+            /*if (type == Convertors.DISPLAY_COMMENT)
+            {
+                p = tm.getPic(Convertors.DISPLAY_PROCESSED, java.util.UUID.fromString(Image));
+            }
+            else
+            {
+                p = tm.getPic(type,java.util.UUID.fromString(Image));
+            }*/
         }
         catch (IllegalArgumentException iae)
         {
@@ -180,9 +206,38 @@ public class Image extends HttpServlet {
         }
         out.close();
     }
+    public void DisplayComments(int type,String image, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException
+    {
+        System.out.println("Comments");
+        
+        //PrintWriter outPR = null;
+        //outPR = new PrintWriter(response.getOutputStream());
+        CommentModel cm = new CommentModel();
+        cm.setCluster(cluster);
+        ArrayList<Comment> comments = cm.getComments(java.util.UUID.fromString(image));
+        /*if (comments == null)
+        {
+            outPR.println("<h3>No comments</h3>");
+        }
+        else
+        {
+            for (Comment comment : comments)
+            {
+                outPR.println("<h3>" + comment.getAuthor() + " wrote: </h3>");
+                outPR.println("<p> " + comment.getComment() + " </p>");
+                outPR.println("<h3>On: " + comment.getWrittenOn().toString() + "</h3>");
+            }
+        }
+        outPR.close();*/
+        request.setAttribute("comments",comments);
+        request.setAttribute("picture",image);
+        RequestDispatcher view = request.getRequestDispatcher("/comment.jsp");
+        view.include(request, response);        
+    }
     
     /**
      * Function for deleting an image
+     * 
      * 
      * @param picid The id of the image to delete
      * @param request the http servlet request

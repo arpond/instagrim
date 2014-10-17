@@ -36,7 +36,7 @@
                     <li>Email  <input type="text" name="email"></li>
                 </ul>
                 <br/>
-                <input type="submit" value="Regidter"> 
+                <input type="submit" value="Register"> 
             </form>
 
         </article>
