@@ -27,9 +27,13 @@
             String owner = userDetails.getUsername();
             String firstname = userDetails.getFirstname();
             String lastname = userDetails.getLastname();
+            String street = userDetails.getStreet();
+            String city = userDetails.getCity();
+            String zipcode;
+            int zip = userDetails.getZip();
             Set<String> emails = userDetails.getEmails();
             Date joined = userDetails.getJoined();
-            String fullname = "unknown";
+            String fullname = "";
             
             if (firstname != null && lastname != null)
             {
@@ -38,6 +42,17 @@
             else if (firstname != null)
             {
                 fullname = firstname;
+            }
+            
+            if (street.equals(""))
+            {
+                street = "-";
+                city = "-";
+                zipcode = "-";
+            }
+            else
+            {
+                zipcode = Integer.toString(zip);
             }
             %>
             
@@ -57,7 +72,13 @@
                 }
                 %>
                 </li>
-                <li>Address: </li>
+                <li>Address
+                    <ul>
+                        <li>Street: <%=street%></li>
+                        <li>City: <%=city%></li>
+                        <li>Zip: <%=zipcode%></li>
+                    </ul>
+                </li>
                 <li>Joined: <%=joined.toString()%></li>
             </ul>
         </header>

@@ -134,6 +134,10 @@ public class Profile extends HttpServlet {
         String firstname = request.getParameter("firstname");
         String lastname = request.getParameter("lastname");
         String mails = request.getParameter("email");
+        String street = request.getParameter("street");
+        String city = request.getParameter("city");
+        String zip = request.getParameter("zip");
+        int zipcode = 0;
                      
         if (firstname == null)
         {
@@ -148,6 +152,33 @@ public class Profile extends HttpServlet {
             mails = "";
         }
         
+        if (!street.equals("") || !city.equals("") || !zip.equals(""))
+        {
+            if (!street.equals("") && !city.equals("") && !zip.equals(""))
+            {
+                try
+                {
+                    zipcode = Integer.parseInt(zip);
+                }
+                catch (Exception e)
+                {
+                    error("Your zipcode is invalid", request, response);
+                    return;
+                }
+            }
+            else
+            {
+                error("Your address is incomplete", request, response);
+                return;
+            }
+        }
+        else
+        {
+            street = "";
+            city = "";
+            zipcode = 0;
+        }
+        
         User us=new User();
         us.setCluster(cluster);
         
@@ -156,13 +187,13 @@ public class Profile extends HttpServlet {
             error("You do not have permission to do that!", request, response);
             return;
         }
-        
+
         HttpSession session=request.getSession();
         System.out.println("Session in servlet "+session);
         LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
         String current = lg.getUsername();
                
-        us.updateUserDetails(current, firstname, lastname, mails);
+        us.updateUserDetails(current, firstname, lastname, mails, street, city, zipcode);
         response.sendRedirect("/Instagrim/Profile/View/" + owner);
     }
     

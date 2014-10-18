@@ -12,11 +12,15 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.UDTValue;
+import com.datastax.driver.core.UserType;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Set;
+import java.util.Map;
 import java.util.HashSet;
+import java.util.HashMap;
 import uk.ac.dundee.computing.aec.instagrim.lib.AeSimpleSHA1;
 import uk.ac.dundee.computing.aec.instagrim.lib.simpleSHA256;
 import uk.ac.dundee.computing.aec.instagrim.lib.saltGenerator;
@@ -81,7 +85,7 @@ public class User {
         }
         
         session.execute(// this is where the query is executed
-bsInsertUser.bind(// here you are binding the 'boundStatement'
+            bsInsertUser.bind(// here you are binding the 'boundStatement'
                         username,encodedPassword,salt,emails,dateJoined));
         //We are assuming this always works.  Also a transaction would be good here !
         
@@ -91,19 +95,9 @@ bsInsertUser.bind(// here you are binding the 'boundStatement'
     // Improve no images returned
     
     public boolean IsValidUser(String username, String password){
-        /*AeSimpleSHA1 sha1handler=  new AeSimpleSHA1();
-        String EncodedPassword=null;
-        try {
-            EncodedPassword= sha1handler.SHA1(Password);
-        }catch (UnsupportedEncodingException | NoSuchAlgorithmException et){
-            System.out.println("Can't check your password");
-            return false;
-        }*/
-        
+         
         simpleSHA256 sha256handler = new simpleSHA256();
-        //saltGenerator saltShaker = new saltGenerator();
         String encodedPassword = null;
-        //String salt = null;
         
         Session session = cluster.connect("instagrim");
         PreparedStatement ps = session.prepare("select password, salt from userprofiles where login =?");
@@ -168,7 +162,24 @@ bsInsertUser.bind(// here you are binding the 'boundStatement'
                 String lastname = row.getString("last_name");
                 Date joined = row.getDate("joined");
                 Set<String> emails = row.getSet("email", String.class);
-                userDetails.setUser(login, firstname, lastname, joined, emails);
+                Map<String, UDTValue> addresses = row.getMap("addresses", String.class, UDTValue.class);
+                UDTValue address = addresses.get("Home");
+                String street;
+                String city;
+                int zip;
+                if (address == null)
+                {
+                    street = "";
+                    city = "";
+                    zip = 0;
+                }
+                else
+                {
+                    street = address.getString("street");
+                    city = address.getString("city");
+                    zip = address.getInt("zip");
+                }
+                userDetails.setUser(login, firstname, lastname, joined, emails, street, city, zip);
             }
         }
         
@@ -177,7 +188,7 @@ bsInsertUser.bind(// here you are binding the 'boundStatement'
         return userDetails;
     }
     
-    public Boolean updateUserDetails(String username, String firstname, String lastname, String emails)
+    public Boolean updateUserDetails(String username, String firstname, String lastname, String emails, String street, String city, int zip)
     {
         Session session = cluster.connect("instagrim");
        
@@ -185,7 +196,13 @@ bsInsertUser.bind(// here you are binding the 'boundStatement'
         System.out.println(firstname);
         System.out.println(lastname);
         System.out.println(emails);
-        PreparedStatement ps = session.prepare("Update userprofiles set first_name = ?, last_name = ?, email = ? where login =?");
+        
+        UserType addressUDT = session.getCluster().getMetadata().getKeyspace("instagrim").getUserType("address");
+        UDTValue address = addressUDT.newValue().setString("street", street).setString("city", city).setInt("zip", zip);
+        Map<String, UDTValue> addresses = new HashMap<String, UDTValue>();
+        addresses.put("Home", address);
+        
+        PreparedStatement ps = session.prepare("Update userprofiles set first_name = ?, last_name = ?, email = ?, addresses = ? where login =?");
         ResultSet rs = null;
         BoundStatement bs = new BoundStatement(ps);
         
@@ -197,7 +214,7 @@ bsInsertUser.bind(// here you are binding the 'boundStatement'
             mails.add(mail);
         }
         
-        session.execute(bs.bind(firstname,lastname,mails,username));
+        session.execute(bs.bind(firstname,lastname,mails,addresses,username));
         
         return true;
     }

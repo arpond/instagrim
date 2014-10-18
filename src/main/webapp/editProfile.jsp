@@ -27,6 +27,10 @@
             String owner = userDetails.getUsername();
             String firstname = userDetails.getFirstname();
             String lastname = userDetails.getLastname();
+            String street = userDetails.getStreet();
+            String city = userDetails.getCity();
+            String zipcode;
+            int zip = userDetails.getZip();
             Set<String> emails = userDetails.getEmails();
             
             String mails = "";
@@ -40,6 +44,17 @@
             {
                 lastname = "";
             }
+            
+            if (street.equals(""))
+            {
+                city = "";
+                zipcode = "";
+            }
+            else
+            {
+                zipcode = Integer.toString(zip);
+            }
+            
             
             Iterator<String> iterator;
             iterator = emails.iterator();
@@ -56,6 +71,9 @@
                     <li>Profile: <%=owner%></li>
                     <li>First Name: <input type="text" name="firstname" value="<%=firstname%>"></li>
                     <li>Last Name : <input type="text" name="lastname" value="<%=lastname%>"></li>
+                    <li>Street: <input type="text" name="street" value="<%=street%>"></li>
+                    <li>City: <input type="text" name="city" value="<%=city%>"></li>
+                    <li>Zip: <input type="text" name="zip" value="<%=zipcode%>"></li>
                     <li>Emails:  <input type="text" name="email" value="<%=mails%>"></li>
                     <input type="hidden" name="owner" value="<%=owner%>">
                 </ul>
