@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
+import uk.ac.dundee.computing.aec.instagrim.lib.Error;
 import uk.ac.dundee.computing.aec.instagrim.models.User;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 
@@ -58,12 +59,12 @@ public class Login extends HttpServlet {
         
         if (username.equals(""))
         {
-            error("You must enter a username",response);
+            Error.error("You must enter a username", request, response);
             return;
         }
         else if (password.equals(""))
         {
-            error("You must enter a passweord", response);
+            Error.error("You must enter a passweord", request, response);
             return;
         }
         
@@ -99,13 +100,4 @@ public class Login extends HttpServlet {
         return "Short description";
     }// </editor-fold>
     
-     private void error(String mess, HttpServletResponse response) throws ServletException, IOException {
-        PrintWriter out = null;
-        out = new PrintWriter(response.getOutputStream());
-        out.println("<h1>You have a na error in your input</h1>");
-        out.println("<h2>" + mess + "</h2>");
-        out.close();
-        return;
-    }
-
 }

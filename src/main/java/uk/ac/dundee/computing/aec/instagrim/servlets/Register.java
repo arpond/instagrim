@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
+import uk.ac.dundee.computing.aec.instagrim.lib.Error;
 import uk.ac.dundee.computing.aec.instagrim.models.User;
 
 /**
@@ -59,22 +60,22 @@ public class Register extends HttpServlet {
         
         if (username.equals(""))
         {
-            error("You must enter a username",response);
+            Error.error("You must enter a username", request, response);
             return;
         }
         else if (password.equals(""))
         {
-            error("You must enter a passweord", response);
+            Error.error("You must enter a passweord", request, response);
             return;
         }
         else if (!password.equals(confirm))
         {
-            error("Your passwords do not match", response);
+            Error.error("Your passwords do not match", request, response);
             return;
         }
         else if (email.equals(""))
         {
-            error("You must enter an email address", response);
+            Error.error("You must enter an email address", request, response);
             return;
         }
         
@@ -84,7 +85,7 @@ public class Register extends HttpServlet {
  
         if (regResult.equals("success"))
         {
-            request.setAttribute("message", "Registeration Succesful");
+            request.setAttribute("message", "Registration Succesful");
             RequestDispatcher view = request.getRequestDispatcher("/message.jsp");
             view.forward(request, response);
         }
@@ -108,14 +109,5 @@ public class Register extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
-    private void error(String mess, HttpServletResponse response) throws ServletException, IOException {
-        PrintWriter out = null;
-        out = new PrintWriter(response.getOutputStream());
-        out.println("<h1>You have a na error in your input</h1>");
-        out.println("<h2>" + mess + "</h2>");
-        out.close();
-        return;
-    }
 
 }

@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
+import uk.ac.dundee.computing.aec.instagrim.lib.Error;
 import uk.ac.dundee.computing.aec.instagrim.models.User;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 import uk.ac.dundee.computing.aec.instagrim.stores.UserDetails;
@@ -62,7 +63,7 @@ public class Profile extends HttpServlet {
             {
                 debug += ", " + args[i];
             }   
-            error("Bad Operator " + debug,  request, response);
+            Error.error("Bad Operator " + debug,  request, response);
             return;
         }
         
@@ -77,12 +78,12 @@ public class Profile extends HttpServlet {
                 editProfile(args[3], request, response);
                 break;
             default:
-                error("Bad Operator - default",  request, response);
+                Error.error("Bad Operator - default",  request, response);
             }
         }
         catch (ArrayIndexOutOfBoundsException oobex)
         {
-            error("ArrayOutOfBounds",  request, response);
+            Error.error("ArrayOutOfBounds",  request, response);
         }  
     }
     
@@ -99,7 +100,7 @@ public class Profile extends HttpServlet {
         if (userDetails == null)
         {
             System.out.println("Big bad error!!");
-            error("User not found", request, response);
+            Error.error("User not found", request, response);
             return;
         }
         request.setAttribute("details",userDetails);
@@ -114,7 +115,7 @@ public class Profile extends HttpServlet {
         
         if (!userMatch(owner,request))
         {
-            error("You do not have permission to do that!", request, response);
+            Error.error("You do not have permission to do that!", request, response);
             return;
         }
                 
@@ -162,13 +163,13 @@ public class Profile extends HttpServlet {
                 }
                 catch (Exception e)
                 {
-                    error("Your zipcode is invalid", request, response);
+                    Error.error("Your zipcode is invalid", request, response);
                     return;
                 }
             }
             else
             {
-                error("Your address is incomplete", request, response);
+                Error.error("Your address is incomplete", request, response);
                 return;
             }
         }
@@ -184,7 +185,7 @@ public class Profile extends HttpServlet {
         
         if (!userMatch(owner,request))
         {
-            error("You do not have permission to do that!", request, response);
+            Error.error("You do not have permission to do that!", request, response);
             return;
         }
 
@@ -213,12 +214,5 @@ public class Profile extends HttpServlet {
             return false;
         }
         return true;
-    }
-    
-    private void error(String mess, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("error", mess);
-        RequestDispatcher view = request.getRequestDispatcher("/error.jsp");
-        view.forward(request, response);
-        return;
     }
 }
