@@ -59,7 +59,6 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Comment;
  * TODO - Improve when "/Thumb/" and "/Thumb" (array out of bounds line 100)
  * TODO - Improve when Thumb doesn't exist (invalid UUID line 122, UUID.java 194)
  * TODO - Improve how unrecognised file types are handled
- * TOFIX - Negative array size exception when uploading huge file (line 154)
  */
 
 public class Image extends HttpServlet {
@@ -82,7 +81,7 @@ public class Image extends HttpServlet {
         CommandsMap.put("Delete", 4);
         CommandsMap.put("Comments", 5);
         CommandsMap.put("Sepia", 6);
-
+        CommandsMap.put("Negative", 7);
     }
 
     public void init(ServletConfig config) throws ServletException {
@@ -133,6 +132,9 @@ public class Image extends HttpServlet {
                 break;
             case 6:
                 DisplayImage(Convertors.DISPLAY_SEPIA,args[3], response, request);
+                break;
+            case 7:
+                DisplayImage(Convertors.DISPLAY_NEGATIVE,args[3],response,request);
                 break;
             default:
                 Error.error("Bad Operator",  request, response);

@@ -11,6 +11,7 @@ public final class Convertors {
     public static int DISPLAY_THUMB=1;
     public static int DISPLAY_PROCESSED=2;
     public static int DISPLAY_SEPIA = 3;
+    public static int DISPLAY_NEGATIVE=4;
     public void Convertors() {
 
     }

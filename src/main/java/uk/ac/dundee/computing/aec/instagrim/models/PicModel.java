@@ -19,6 +19,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.utils.Bytes;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
@@ -168,25 +169,7 @@ public class PicModel {
         byte[] imageInByte = baos.toByteArray();
         baos.close();
         return imageInByte;
-    }
-
-    public byte[] picSepia (String picid, String type)
-    {
-     try {
-            BufferedImage BI = ImageIO.read(new File("/var/tmp/instagrim/" + picid));
-            BufferedImage processed = createSepia(BI);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(processed, type, baos);
-            baos.flush();
-            byte[] imageInByte = baos.toByteArray();
-            baos.close();
-            return imageInByte;
-        } catch (IOException et) {
-
-        }
-        return null;   
-    }
-    
+    }   
     
     public static BufferedImage createThumbnail(BufferedImage img) {
         img = resize(img, Method.SPEED, 250, OP_ANTIALIAS, OP_GRAYSCALE);
@@ -207,25 +190,31 @@ public class PicModel {
         img = toSepia(img, 80);
         return pad(img,4);
     }
-   
     
+    public static BufferedImage createNegative(BufferedImage img)
+    {
+        img = invertImage(img);
+        return img;
+    }
+   
+    /**
+     * Taken from http://stackoverflow.com/questions/21899824/java-convert-a-greyscale-and-sepia-version-of-an-image-with-bufferedimage
+     * @param img
+     * @param sepiaIntensity
+     * @return 
+     */
     public static BufferedImage toSepia(BufferedImage img, int sepiaIntensity) 
     {
-
         BufferedImage sepia = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
         // Play around with this.  20 works well and was recommended
         //   by another developer. 0 produces black/white image
         int sepiaDepth = 20;
-
         int w = img.getWidth();
         int h = img.getHeight();
-
         WritableRaster raster = sepia.getRaster();
-
         // We need 3 integers (for R,G,B color values) per pixel.
         int[] pixels = new int[w * h * 3];
         img.getRaster().getPixels(0, 0, w, h, pixels);
-
         //  Process 3 ints at a time for each pixel.  Each pixel has 3 RGB
         //    colors in array
         for (int i = 0; i < pixels.length; i += 3) 
@@ -239,34 +228,54 @@ public class PicModel {
             r = r + (sepiaDepth * 2);
             g = g + sepiaDepth;
 
-            if (r > 255) {
+            if (r > 255) 
+            {
                 r = 255;
             }
-            if (g > 255) {
+            if (g > 255) 
+            {
                 g = 255;
             }
-            if (b > 255) {
+            if (b > 255) 
+            {
                 b = 255;
             }
-
+            
             // Darken blue color to increase sepia effect
             b -= sepiaIntensity;
 
             // normalize if out of bounds
-            if (b < 0) {
+            if (b < 0) 
+            {
                 b = 0;
             }
-            if (b > 255) {
+            if (b > 255) 
+            {
                 b = 255;
             }
-
             pixels[i] = r;
             pixels[i + 1] = g;
             pixels[i + 2] = b;
         }
         raster.setPixels(0, 0, w, h, pixels);
-
         return sepia;
+    }
+    
+    public static BufferedImage invertImage(BufferedImage img) 
+    {
+        for (int x = 0; x < img.getWidth(); x++) 
+        {
+            for (int y = 0; y < img.getHeight(); y++) 
+            {
+                int rgba = img.getRGB(x, y);
+                Color col = new Color(rgba, true);
+                col = new Color(255 - col.getRed(),
+                                255 - col.getGreen(),
+                                255 - col.getBlue());
+                img.setRGB(x, y, col.getRGB());
+            }
+        }
+        return img;
     }
 
    
@@ -305,12 +314,12 @@ public class PicModel {
             ResultSet rs = null;
             PreparedStatement ps = null;
          
-            if (image_type == Convertors.DISPLAY_IMAGE || image_type == Convertors.DISPLAY_SEPIA) {
-                
+            if (image_type == Convertors.DISPLAY_IMAGE || image_type == Convertors.DISPLAY_SEPIA) 
+            {    
                 ps = session.prepare("select image,imagelength,type from pics where picid =?");
             } else if (image_type == Convertors.DISPLAY_THUMB) {
                 ps = session.prepare("select thumb,imagelength,thumblength,type from pics where picid =?");
-            } else if (image_type == Convertors.DISPLAY_PROCESSED) {
+            } else if (image_type == Convertors.DISPLAY_PROCESSED || image_type == Convertors.DISPLAY_NEGATIVE) {
                 ps = session.prepare("select processed,processedlength,type from pics where picid =?");
             }
             BoundStatement boundStatement = new BoundStatement(ps);
@@ -331,13 +340,11 @@ public class PicModel {
                         bImage = row.getBytes("thumb");
                         length = row.getInt("thumblength");
                 
-                    } else if (image_type == Convertors.DISPLAY_PROCESSED) {
+                    } else if (image_type == Convertors.DISPLAY_PROCESSED || image_type == Convertors.DISPLAY_NEGATIVE) {
                         bImage = row.getBytes("processed");
                         length = row.getInt("processedlength");
                     }
-                    
                     type = row.getString("type");
-
                 }
             }
         } catch (Exception et) {
@@ -346,34 +353,48 @@ public class PicModel {
         }
         session.close();
         Pic p = new Pic();
-        if (image_type == Convertors.DISPLAY_SEPIA)
+        if (image_type == Convertors.DISPLAY_SEPIA || image_type == Convertors.DISPLAY_NEGATIVE)
         {
-            System.out.println("Converting to Sepia");
-            try
-            {
-                byte[] temp = new byte[bImage.remaining()];
-                bImage.get(temp);
-                
-                String types[]=Convertors.SplitFiletype(type);
-
-                InputStream in = new ByteArrayInputStream(temp);
-                BufferedImage bImageNew = ImageIO.read(in);
-
-                bImageNew = createSepia(bImageNew);
-                ByteArrayOutputStream bs = new ByteArrayOutputStream();
-                ImageIO.write(bImageNew, types[1], bs);
-                bs.flush();
-                bImage = ByteBuffer.wrap(bs.toByteArray());
-                bs.close();
-            }
-            catch (IOException ioe)
-            {
-            }   
+            System.out.println("Converting on the fly");
+            bImage = applyFilter(image_type,bImage,type);
         }
         p.setPic(bImage, length, type);
-
         return p;
-
     }
+    
+    private ByteBuffer applyFilter(int image_type, ByteBuffer bImage, String type)
+    {
+        try
+        {
+            String types[]=Convertors.SplitFiletype(type);
+            byte[] temp = new byte[bImage.remaining()];
+            bImage.get(temp);
+            InputStream in = new ByteArrayInputStream(temp);
+            BufferedImage bImageNew = ImageIO.read(in);
+            
+            if (image_type == Convertors.DISPLAY_SEPIA)
+            {
+                System.out.println("Converting to Sepia..");
+                bImageNew = createSepia(bImageNew);
+            }
+            else if (image_type == Convertors.DISPLAY_NEGATIVE)
+            {
+                System.out.println("Converting to negative...");
+                bImageNew = createNegative(bImageNew);
+            }
+            
+            ByteArrayOutputStream bs = new ByteArrayOutputStream();
+            ImageIO.write(bImageNew, types[1], bs);
+            bs.flush();
+            bImage = ByteBuffer.wrap(bs.toByteArray());
+            bs.close();
+            System.out.println("done");
+        }
+        catch (IOException ioe)
+        {
+            
+        }
+        return bImage;
+    } 
 
 }
