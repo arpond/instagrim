@@ -20,7 +20,9 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.utils.Bytes;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 
 import java.io.FileInputStream;
@@ -173,17 +175,105 @@ public class PicModel {
         return null;
     }
 
+    public byte[] picSepia (String picid, String type)
+    {
+     try {
+            BufferedImage BI = ImageIO.read(new File("/var/tmp/instagrim/" + picid));
+            BufferedImage processed = createSepia(BI);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(processed, type, baos);
+            baos.flush();
+            byte[] imageInByte = baos.toByteArray();
+            baos.close();
+            return imageInByte;
+        } catch (IOException et) {
+
+        }
+        return null;   
+    }
+    
+    
     public static BufferedImage createThumbnail(BufferedImage img) {
         img = resize(img, Method.SPEED, 250, OP_ANTIALIAS, OP_GRAYSCALE);
         // Let's add a little border before we return result.
         return pad(img, 2);
     }
     
-   public static BufferedImage createProcessed(BufferedImage img) {
+    public static BufferedImage createProcessed(BufferedImage img) {
         int Width=img.getWidth()-1;
         img = resize(img, Method.SPEED, Width, OP_ANTIALIAS, OP_GRAYSCALE);
         return pad(img, 4);
     }
+   
+    public static BufferedImage createSepia(BufferedImage img)
+    {
+        int width = img.getWidth() - 1;
+        img = resize(img, Method.SPEED, width, OP_ANTIALIAS);
+        img = toSepia(img, 80);
+        return pad(img,4);
+    }
+   
+    
+    public static BufferedImage toSepia(BufferedImage img, int sepiaIntensity) 
+    {
+
+        BufferedImage sepia = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
+        // Play around with this.  20 works well and was recommended
+        //   by another developer. 0 produces black/white image
+        int sepiaDepth = 20;
+
+        int w = img.getWidth();
+        int h = img.getHeight();
+
+        WritableRaster raster = sepia.getRaster();
+
+        // We need 3 integers (for R,G,B color values) per pixel.
+        int[] pixels = new int[w * h * 3];
+        img.getRaster().getPixels(0, 0, w, h, pixels);
+
+        //  Process 3 ints at a time for each pixel.  Each pixel has 3 RGB
+        //    colors in array
+        for (int i = 0; i < pixels.length; i += 3) 
+        {
+            int r = pixels[i];
+            int g = pixels[i + 1];
+            int b = pixels[i + 2];
+
+            int gry = (r + g + b) / 3;
+            r = g = b = gry;
+            r = r + (sepiaDepth * 2);
+            g = g + sepiaDepth;
+
+            if (r > 255) {
+                r = 255;
+            }
+            if (g > 255) {
+                g = 255;
+            }
+            if (b > 255) {
+                b = 255;
+            }
+
+            // Darken blue color to increase sepia effect
+            b -= sepiaIntensity;
+
+            // normalize if out of bounds
+            if (b < 0) {
+                b = 0;
+            }
+            if (b > 255) {
+                b = 255;
+            }
+
+            pixels[i] = r;
+            pixels[i + 1] = g;
+            pixels[i + 2] = b;
+        }
+        raster.setPixels(0, 0, w, h, pixels);
+
+        return sepia;
+    }
+
    
     public java.util.LinkedList<Pic> getPicsForUser(String User) {
         java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
@@ -220,7 +310,7 @@ public class PicModel {
             ResultSet rs = null;
             PreparedStatement ps = null;
          
-            if (image_type == Convertors.DISPLAY_IMAGE) {
+            if (image_type == Convertors.DISPLAY_IMAGE || image_type == Convertors.DISPLAY_SEPIA) {
                 
                 ps = session.prepare("select image,imagelength,type from pics where picid =?");
             } else if (image_type == Convertors.DISPLAY_THUMB) {
@@ -238,9 +328,10 @@ public class PicModel {
                 return null;
             } else {
                 for (Row row : rs) {
-                    if (image_type == Convertors.DISPLAY_IMAGE) {
+                    if (image_type == Convertors.DISPLAY_IMAGE || image_type == Convertors.DISPLAY_SEPIA) {
                         bImage = row.getBytes("image");
                         length = row.getInt("imagelength");
+                        System.out.println("got image");
                     } else if (image_type == Convertors.DISPLAY_THUMB) {
                         bImage = row.getBytes("thumb");
                         length = row.getInt("thumblength");
@@ -260,6 +351,30 @@ public class PicModel {
         }
         session.close();
         Pic p = new Pic();
+        if (image_type == Convertors.DISPLAY_SEPIA)
+        {
+            System.out.println("Converting to Sepia");
+            try
+            {
+                byte[] temp = new byte[bImage.remaining()];
+                bImage.get(temp);
+                
+                String types[]=Convertors.SplitFiletype(type);
+
+                InputStream in = new ByteArrayInputStream(temp);
+                BufferedImage bImageNew = ImageIO.read(in);
+
+                bImageNew = createSepia(bImageNew);
+                ByteArrayOutputStream bs = new ByteArrayOutputStream();
+                ImageIO.write(bImageNew, types[1], bs);
+                bs.flush();
+                bImage = ByteBuffer.wrap(bs.toByteArray());
+                bs.close();
+            }
+            catch (IOException ioe)
+            {
+            }   
+        }
         p.setPic(bImage, length, type);
 
         return p;

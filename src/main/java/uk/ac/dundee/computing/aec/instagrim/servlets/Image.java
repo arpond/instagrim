@@ -47,8 +47,8 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Comment;
     "/Images/*",
     "/Delete/",
     "/Delete/*",
-    "/Comments/",
-    "/Comments/*"
+    "/Alter/*",
+    "/Alter/",
 })
 @MultipartConfig
 
@@ -81,6 +81,7 @@ public class Image extends HttpServlet {
         CommandsMap.put("Thumb", 3);
         CommandsMap.put("Delete", 4);
         CommandsMap.put("Comments", 5);
+        CommandsMap.put("Sepia", 6);
 
     }
 
@@ -128,7 +129,10 @@ public class Image extends HttpServlet {
                 DeleteImage(args[3], args[2], request, response);
                 break;
             case 5:
-                DisplayComments(Convertors.DISPLAY_COMMENT,args[3],  response, request);
+                DisplayComments(args[3],  response, request);
+                break;
+            case 6:
+                DisplayImage(Convertors.DISPLAY_SEPIA,args[3], response, request);
                 break;
             default:
                 Error.error("Bad Operator",  request, response);
@@ -180,14 +184,6 @@ public class Image extends HttpServlet {
         try
         {
             p = tm.getPic(type,java.util.UUID.fromString(Image));
-            /*if (type == Convertors.DISPLAY_COMMENT)
-            {
-                p = tm.getPic(Convertors.DISPLAY_PROCESSED, java.util.UUID.fromString(Image));
-            }
-            else
-            {
-                p = tm.getPic(type,java.util.UUID.fromString(Image));
-            }*/
         }
         catch (IllegalArgumentException iae)
         {
@@ -207,7 +203,7 @@ public class Image extends HttpServlet {
         }
         out.close();
     }
-    public void DisplayComments(int type,String image, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException
+    public void DisplayComments(String image, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException
     {
         System.out.println("Comments");
 
