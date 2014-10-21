@@ -29,6 +29,7 @@ public class CommentServlet  extends HttpServlet {
     
     Cluster cluster;
 
+    @Override
     public void init(ServletConfig config) throws ServletException {
         // TODO Auto-generated method stub
         cluster = CassandraHosts.getCluster();
@@ -57,5 +58,11 @@ public class CommentServlet  extends HttpServlet {
         request.setAttribute("message", "Comment Posted");
         RequestDispatcher view = request.getRequestDispatcher("/message.jsp");
         view.forward(request, response);
+    }
+    
+    @Override
+    public void destroy()
+    {
+        cluster.close();
     }
 }

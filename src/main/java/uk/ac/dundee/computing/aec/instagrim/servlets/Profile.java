@@ -55,11 +55,13 @@ public class Profile extends HttpServlet {
         PostMap.put("upload", 2);
     }
 
+    @Override
     public void init(ServletConfig config) throws ServletException {
         // TODO Auto-generated method stub
         cluster = CassandraHosts.getCluster();
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String args[] = Convertors.SplitRequestPath(request);
         int command = 0;
@@ -290,5 +292,11 @@ public class Profile extends HttpServlet {
             return false;
         }
         return true;
+    }
+    
+    @Override
+    public void destroy()
+    {
+        cluster.close();
     }
 }

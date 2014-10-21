@@ -33,6 +33,8 @@ import uk.ac.dundee.computing.aec.instagrim.models.UserModel;
 @WebServlet(name = "Register", urlPatterns = {"/Register"})
 public class Register extends HttpServlet {
     Cluster cluster=null;
+    
+    @Override
     public void init(ServletConfig config) throws ServletException {
         // TODO Auto-generated method stub
         cluster = CassandraHosts.getCluster();
@@ -115,4 +117,9 @@ public class Register extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    @Override
+    public void destroy()
+    {
+        cluster.close();
+    }
 }

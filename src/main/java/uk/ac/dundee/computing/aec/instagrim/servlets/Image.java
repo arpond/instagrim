@@ -94,6 +94,7 @@ public class Image extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      * response)
      */
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // TODO Auto-generated method stub
         String args[] = Convertors.SplitRequestPath(request);
@@ -336,6 +337,7 @@ public class Image extends HttpServlet {
         }
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = (String) request.getParameter("action");
         System.out.println(action);
@@ -358,5 +360,11 @@ public class Image extends HttpServlet {
         
         
 
+    }
+    
+    @Override
+    public void destroy()
+    {
+        cluster.close();
     }
 }

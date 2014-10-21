@@ -26,11 +26,13 @@ public class Logout extends HttpServlet {
     
     Cluster cluster;
 
+    @Override
     public void init(ServletConfig config) throws ServletException {
         // TODO Auto-generated method stub
         cluster = CassandraHosts.getCluster();
     }
     
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session=request.getSession();
         session.invalidate();
@@ -39,4 +41,10 @@ public class Logout extends HttpServlet {
         view.forward(request, response);
     }
     
+        
+    @Override
+    public void destroy()
+    {
+        cluster.close();
+    }
 }
