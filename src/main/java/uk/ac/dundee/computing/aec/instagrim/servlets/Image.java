@@ -66,6 +66,7 @@ public class Image extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Cluster cluster;
     private HashMap CommandsMap = new HashMap();
+    private HashMap PostMap = new HashMap();
     
     
 
@@ -78,10 +79,11 @@ public class Image extends HttpServlet {
         CommandsMap.put("Image", 1);
         CommandsMap.put("Images", 2);
         CommandsMap.put("Thumb", 3);
-        CommandsMap.put("Delete", 4);
         CommandsMap.put("Comments", 5);
         CommandsMap.put("Sepia", 6);
         CommandsMap.put("Negative", 7);
+        PostMap.put("upload", 1);
+        PostMap.put("delete", 2);
     }
 
     public void init(ServletConfig config) throws ServletException {
@@ -125,8 +127,8 @@ public class Image extends HttpServlet {
                 DisplayImage(Convertors.DISPLAY_THUMB,args[2],  response, request);
                 break;
             case 4:
-                DeleteImage(args[3], args[2], request, response);
-                break;
+                //DeleteImage(args[3], args[2], request, response);
+                //break;
             case 5:
                 DisplayComments(args[3],  response, request);
                 break;
@@ -229,7 +231,7 @@ public class Image extends HttpServlet {
      * @throws ServletException
      * @throws IOException 
      */
-    private void DeleteImage(String picid, String owner, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    private String DeleteImage(String picid, String owner, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
@@ -237,37 +239,40 @@ public class Image extends HttpServlet {
         LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
         if (lg == null || !lg.getlogedin())
         {
-            Error.error("You are not logged in!", request, response);
-            return;
+            //Error.error(, request, response);
+            return "You are not logged in!";
         }
         
         String user = lg.getUsername();
         System.out.println("Owner: " + owner + " User: " + user);
         if (!user.equals(owner))
         {
-            Error.error("You do not have permission to do that!", request, response);
-            return;
+            //Error.error(, request, response);
+            return "You do not have permission to do that!";
         }
         //boolean success = tm.picDelete(user, picid);
         
         String success = tm.picDelete(user, java.util.UUID.fromString(picid));  
         if (!success.equals("success"))
         {
-            Error.error("Image Not Found\n" + success, request, response);
-            return;
+            //Error.error("Image Not Found" + success, request, response);
+            return "Image Not Found";
         }
         else
         {
-            request.setAttribute("message", "Image Successfully Deleted");
-            RequestDispatcher view = request.getRequestDispatcher("/message.jsp");
-            view.forward(request, response);
+            //request.setAttribute("message", "Image Successfully Deleted");
+            //RequestDispatcher view = request.getRequestDispatcher("/message.jsp");
+            //view.forward(request, response);
         }
+        return "success";
     }
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    
+    private void UploadImage (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
         for (Part part : request.getParts()) {
             System.out.println("Part Name " + part.getName());
             String type = part.getContentType();
+            System.out.println(type);
             if (!type.equalsIgnoreCase("image/jpeg") && !type.equalsIgnoreCase("image/png"))
             {
                 Error.error("Unrecognised File Type",  request, response);
@@ -288,6 +293,11 @@ public class Image extends HttpServlet {
             if (lg.getlogedin()){
                 username=lg.getUsername();
             }
+            else
+            {
+                Error.error("You are not logged in!", request, response);
+                return;
+            }
             if (i > 0) {
                 // Watch for negative array size..
                 byte[] b = new byte[i+1];
@@ -302,6 +312,61 @@ public class Image extends HttpServlet {
             RequestDispatcher rd = request.getRequestDispatcher("/upload.jsp");
             rd.forward(request, response);
         }
+    }
+    
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+    {         
+        System.out.println("Inside doDelete");
+        String args[] = Convertors.SplitRequestPath(request);
+        
+        String owner = args[2];
+        String picid = args[3];
+        System.out.println("owner:"+owner+" picid:" + picid);
+        
+        String result = DeleteImage(picid,owner,request,response);
+        //boolean success = true;
+        response.setContentType("application/json");
+        if (result.equals("success"))
+        {
+            response.getWriter().write("{ \"success\": true, \"message\": \"Image Succesfully Deleted\" }");
+        }
+        else
+        {
+            response.getWriter().write("{ \"success\": false, \"message\": \"" + result + "\" }");
+        }
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = (String) request.getParameter("action");
+        //String owner2 = (String) request.getParameter("owner");
+        //String picid2 = (String) request.getParameter("picid");
+        //System.out.println("picid: " + picid2 + " owner: " + owner2);
+        System.out.println(action);
+        int command;
+        try {
+            command = (Integer) PostMap.get(action);
+        } catch (Exception et) {
+            Error.error("Bad Post Operator",  request, response);
+            return;
+        }
+        
+        switch (command)
+        {
+            case 1:
+                UploadImage (request,response);
+                break;
+            case 2:
+                String owner = (String) request.getParameter("owner");
+                String picid = (String) request.getParameter("picid");
+        
+                DeleteImage(picid,owner,request,response);
+                break;
+            default:
+                Error.error("Bad Post Operator",  request, response);
+        }
+        
+        
 
     }
 }

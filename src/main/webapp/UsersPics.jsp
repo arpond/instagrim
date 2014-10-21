@@ -13,6 +13,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Instagrim</title>
         <link rel="stylesheet" type="text/css" href="/Instagrim/Styles.css" />
+        <link rel="stylesheet" type="text/css" href="/Instagrim/jquery-ui.css" />
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="${pageContext.request.contextPath}/Scripts/requests.js" type="text/javascript"></script>
     </head>
     <body>
         <header>
@@ -45,16 +49,33 @@
                 Pic p = (Pic) iterator.next();
 
         %>
-        <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
+        <div id="<%=p.getSUUID()%>"><a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
         <%
                 if (match)
                 {%>
-        <a href="/Instagrim/Delete/<%=owner%>/<%=p.getSUUID()%>" >Delete</a><br/>
-                <%}
+        <form method="POST" action="/Instagrim/Images/">
+            <input type="submit" value="delete" name="action">
+            <input type="hidden" value="<%=owner%>" name="owner">
+            <input type="hidden" value="<%=p.getSUUID()%>" name="picid">
+        </form>
+        <b style="cursor: pointer;" onclick="deleteImage('<%=p.getSUUID()%>', '<%=owner%>');"><h2>Click me</h2></b>
+                <%}%>
+        </div>
+        <%
             }
             }
         %>
         </article>
+<!--        <div id="confirmDelete" title="Delete this image?">
+            
+            <p>This will delete the image permanently, are you sure?</p>
+        </div>
+        <div id="successfulDelete" title="Image Successfully Deleted">
+            <p>The image was successfully deleted</p>
+        </div>
+        <div id="errorDelete" title="Error">
+            <p>There was an error deleting the image</p>
+        </div>    -->
         <footer>
             <ul>
                 <li class="footer"><a href="/Instagrim">Home</a></li>
