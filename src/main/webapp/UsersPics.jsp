@@ -49,16 +49,12 @@
                 Pic p = (Pic) iterator.next();
 
         %>
-        <div id="<%=p.getSUUID()%>"><a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
+        <div id="<%=p.getSUUID()%>">
+            <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
         <%
                 if (match)
                 {%>
-        <form method="POST" action="/Instagrim/Images/">
-            <input type="submit" value="delete" name="action">
-            <input type="hidden" value="<%=owner%>" name="owner">
-            <input type="hidden" value="<%=p.getSUUID()%>" name="picid">
-        </form>
-        <b style="cursor: pointer;" onclick="deleteImage('<%=p.getSUUID()%>', '<%=owner%>');"><h2>Click me</h2></b>
+            <button type="button" onclick="deleteImage('<%=p.getSUUID()%>', '<%=owner%>');">Delete</button>
                 <%}%>
         </div>
         <%
