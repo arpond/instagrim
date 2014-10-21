@@ -83,7 +83,6 @@ public class Image extends HttpServlet {
         CommandsMap.put("Sepia", 6);
         CommandsMap.put("Negative", 7);
         PostMap.put("upload", 1);
-        PostMap.put("delete", 2);
     }
 
     public void init(ServletConfig config) throws ServletException {
@@ -339,9 +338,6 @@ public class Image extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = (String) request.getParameter("action");
-        //String owner2 = (String) request.getParameter("owner");
-        //String picid2 = (String) request.getParameter("picid");
-        //System.out.println("picid: " + picid2 + " owner: " + owner2);
         System.out.println(action);
         int command;
         try {
@@ -355,12 +351,6 @@ public class Image extends HttpServlet {
         {
             case 1:
                 UploadImage (request,response);
-                break;
-            case 2:
-                String owner = (String) request.getParameter("owner");
-                String picid = (String) request.getParameter("picid");
-        
-                DeleteImage(picid,owner,request,response);
                 break;
             default:
                 Error.error("Bad Post Operator",  request, response);
