@@ -13,12 +13,13 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Error;
-import uk.ac.dundee.computing.aec.instagrim.models.User;
+import uk.ac.dundee.computing.aec.instagrim.models.UserModel;
 
 /**
  * TODO - Display errors alongside fields with errors in it.
@@ -79,9 +80,13 @@ public class Register extends HttpServlet {
             return;
         }
         
-        User us=new User();
+        UserModel us=new UserModel();
         us.setCluster(cluster);
-        String regResult = us.RegisterUser(username, password, email);
+        //System.out.println(getServletContext().getContextPath());
+        ServletContext context = request.getSession().getServletContext();
+        
+        System.out.println("Context Path: "+ context.getContextPath());
+        String regResult = us.RegisterUser(username, password, email, context);
  
         if (regResult.equals("success"))
         {
@@ -96,7 +101,7 @@ public class Register extends HttpServlet {
             view.forward(request, response);
         }
         
-	response.sendRedirect("/Instagrim");
+	//response.sendRedirect("/Instagrim");
         
     }
 

@@ -66,7 +66,13 @@
             //Date joined = (Date) request.getAttribute("joined");
             %>
             
-            <form method="POST"  action="../View/<%=owner%>">
+            <form method="POST" enctype="multipart/form-data" action="/Instagrim/Profile/View/<%=owner%>">
+                Upload Profile Picture: <input type="file" name="upfile"><br/><br/>
+                <input type="submit" value="upload" name="action"> to upload the file!
+                <input type="hidden" name="owner" value="<%=owner%>">
+            </form>
+            
+            <form method="POST"  action="/Instagrim/Profile/View/<%=owner%>">
                 <ul>
                     <li>Profile: <%=owner%></li>
                     <li>First Name: <input type="text" name="firstname" value="<%=firstname%>"></li>
@@ -78,7 +84,7 @@
                     <input type="hidden" name="owner" value="<%=owner%>">
                 </ul>
                 <br/>
-                <input type="submit" value="Update"> 
+                <input type="submit" value="update" name="action"> 
             </form>
         </header>
     </body>

@@ -34,7 +34,7 @@
             Set<String> emails = userDetails.getEmails();
             Date joined = userDetails.getJoined();
             String fullname = "";
-            
+                     
             if (firstname != null && lastname != null)
             {
                 fullname = firstname + " " + lastname;
@@ -55,9 +55,13 @@
                 zipcode = Integer.toString(zip);
             }
             %>
-            
+            <div>
+                <h2>Profile: <%=owner%></h2>
+                <br/>
+                <img src="/Instagrim/Profile/ProfilePic/<%=owner%>" width="128" height="128">
+                <br/>
+            </div>
             <ul>
-                <li>Profile: <%=owner%></li>
                 <li>Name: <%=fullname%></li>
                 <li>Email: 
                 <%

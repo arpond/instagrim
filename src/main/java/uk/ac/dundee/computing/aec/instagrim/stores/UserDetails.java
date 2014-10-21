@@ -18,13 +18,13 @@ import com.datastax.driver.core.UDTValue;
  */
 public class UserDetails {
     private String username;
-    private String firstname;
-    private String lastname;
+    private String firstname = "";
+    private String lastname = "";
     private Date joined;
     private Set<String> emails;
-    private String street;
-    private String city;
-    private int zip;
+    private String street = "";
+    private String city = "";
+    private int zip = 0;
 
     public UserDetails() {
     }

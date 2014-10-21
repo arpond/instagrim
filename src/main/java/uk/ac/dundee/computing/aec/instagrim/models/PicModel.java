@@ -56,7 +56,7 @@ public class PicModel {
     public void insertPic(byte[] b, String type, String name, String user) {
         try {
             Convertors convertor = new Convertors();
-
+            System.out.println("Inserting image...");
             String types[]=Convertors.SplitFiletype(type);
             ByteBuffer buffer = ByteBuffer.wrap(b);
             int length = b.length;
@@ -67,10 +67,11 @@ public class PicModel {
             //FileOutputStream output = new FileOutputStream(new File("/var/tmp/instagrim/" + picid));
 
             //output.write(b);
-            
+            System.out.println("Generating Thumb...");
             byte []  thumbb = picresize(types[1],b);
             int thumblength= thumbb.length;
             ByteBuffer thumbbuf=ByteBuffer.wrap(thumbb);
+            System.out.println("Generateing Processed...");            
             byte[] processedb = picdecolour(types[1],b);
             ByteBuffer processedbuf=ByteBuffer.wrap(processedb);
             int processedlength=processedb.length;
@@ -81,6 +82,7 @@ public class PicModel {
             BoundStatement bsInsertPic = new BoundStatement(psInsertPic);
             BoundStatement bsInsertPicToUser = new BoundStatement(psInsertPicToUser);
 
+            System.out.println("Executing queries...");            
             Date DateAdded = new Date();
             session.execute(bsInsertPic.bind(picid, buffer, thumbbuf,processedbuf, user, DateAdded, length,thumblength,processedlength, type, name));
             session.execute(bsInsertPicToUser.bind(picid, user, DateAdded));
@@ -155,6 +157,7 @@ public class PicModel {
 
         byte[] imageInByte = baos.toByteArray();
         baos.close();
+        in.close();
         return imageInByte;
     }
     
@@ -388,6 +391,7 @@ public class PicModel {
             bs.flush();
             bImage = ByteBuffer.wrap(bs.toByteArray());
             bs.close();
+            in.close();
             System.out.println("done");
         }
         catch (IOException ioe)

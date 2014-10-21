@@ -29,7 +29,7 @@
                 File to upload: <input type="file" name="upfile"><br/>
 
                 <br/>
-                <input type="submit" value="Press"> to upload the file!
+                <input type="submit" value="upload" name="action"> to upload the file!
             </form>
 
         </article>

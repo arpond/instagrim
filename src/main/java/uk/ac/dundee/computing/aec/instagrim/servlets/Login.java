@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Error;
-import uk.ac.dundee.computing.aec.instagrim.models.User;
+import uk.ac.dundee.computing.aec.instagrim.models.UserModel;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 
 
@@ -68,7 +68,7 @@ public class Login extends HttpServlet {
             return;
         }
         
-        User us=new User();
+        UserModel us=new UserModel();
         us.setCluster(cluster);
         boolean isValid=us.IsValidUser(username, password);
         HttpSession session=request.getSession();

@@ -49,6 +49,7 @@ public final class Keyspaces {
                     + "      salt text,\n"
                     + "      profilepic blob,\n"
                     + "      profilepiclength int,\n"
+                    + "      profilepictype text,\n"
                     + "      first_name text,\n"
                     + "      last_name text,\n"
                     + "      email set<text>,\n"
