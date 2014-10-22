@@ -13,8 +13,6 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Instagrim</title>
         <link rel="stylesheet" type="text/css" href="/Instagrim/Styles.css" />
-        <link rel="stylesheet" type="text/css" href="/Instagrim/jquery-ui.css" />
-        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="${pageContext.request.contextPath}/Scripts/requests.js" type="text/javascript"></script>
     </head>

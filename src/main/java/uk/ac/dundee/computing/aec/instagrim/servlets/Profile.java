@@ -253,11 +253,27 @@ public class Profile extends HttpServlet {
     }
 
     @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        System.out.println("In doPut..");
+        String firstname = request.getParameter("firstname");
+        String lastname = request.getParameter("lastname");
+        String street = request.getParameter("street");
+        
+        System.out.println("firstname: " + firstname + " lastname: " + lastname + " street: " + street);
+    }
+    
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
 
+        String firstname = request.getParameter("firstname");
+        String lastname = request.getParameter("lastname");
+        String street = request.getParameter("street");
+
+        System.out.println("firstname: " + firstname + " lastname: " + lastname + " street: " + street);
         int command = 0;
         try {
             command = (Integer) PostMap.get(action);

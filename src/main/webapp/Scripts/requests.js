@@ -3,10 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-function foo()
-{
-    alert("blah");
-}
 
 //function confirmDelete(picid, owner)
 //{   
@@ -37,12 +33,7 @@ function deleteImage(picid, owner)
     success: function (data, textStatus, xhr) {
         if (data.success)
         {   
-            //$("#successfullDelete").dialog();
             $("#" + picid).hide();
-        }
-        else
-        {
-            //$("#errorDelete").dialog();
         }
         alert(data.message);
     },
@@ -50,6 +41,20 @@ function deleteImage(picid, owner)
                      alert("There was an error processing your request");
                      console.log('Error in Operation');
                  }
+    });
+}
+
+function updateProfile(owner)
+{
+    var fields = $("updateForm").serializeArray();
+    var data = {'firstname' : owner};
+    alert(data);
+    $.ajax({
+        type: "post",
+        url: "/Instagrim/Profile/" + owner,
+        data: data,
+        dataType: "json",
+        async: false
     });
 }
 

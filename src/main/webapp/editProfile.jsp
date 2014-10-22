@@ -16,6 +16,8 @@
     <head>
         <title>Instagrim</title>
         <link rel="stylesheet" type="text/css" href="/Instagrim/Styles.css" />
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="${pageContext.request.contextPath}/Scripts/requests.js" type="text/javascript"></script>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body>
@@ -72,7 +74,7 @@
                 <input type="hidden" name="owner" value="<%=owner%>">
             </form>
             
-            <form method="POST"  action="/Instagrim/Profile/View/<%=owner%>">
+            <form id="updateForm" method="POST"  action="/Instagrim/Profile/View/<%=owner%>" >
                 <ul>
                     <li>Profile: <%=owner%></li>
                     <li>First Name: <input type="text" name="firstname" value="<%=firstname%>"></li>
@@ -86,6 +88,7 @@
                 <br/>
                 <input type="submit" value="update" name="action"> 
             </form>
+                <h2 onclick="updateProfile('<%=owner%>')">Click Me</h2>
         </header>
     </body>
 </html>

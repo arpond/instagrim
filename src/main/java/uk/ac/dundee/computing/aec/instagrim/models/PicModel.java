@@ -75,6 +75,15 @@ public class PicModel {
             byte[] processedb = picdecolour(types[1],b);
             ByteBuffer processedbuf=ByteBuffer.wrap(processedb);
             int processedlength=processedb.length;
+            
+//            byte[] sepiadb = applyFilter(Convertors.DISPLAY_SEPIA, types[1], b);
+//            ByteBuffer sepiabuf = ByteBuffer.wrap(sepiadb);
+//            int sepialength = sepiadb.length;
+//            
+//            byte[] negativedb = applyFilter(Convertors.DISPLAY_NEGATIVE, types[1], b);
+//            ByteBuffer negativebuf = ByteBuffer.wrap(negativedb);
+//            int negativelength = negativedb.length;
+            
             Session session = cluster.connect("instagrim");
 
             PreparedStatement psInsertPic = session.prepare("insert into pics ( picid, image,thumb,processed, user, interaction_time,imagelength,thumblength,processedlength,type,name) values(?,?,?,?,?,?,?,?,?,?,?)");
@@ -191,7 +200,7 @@ public class PicModel {
         int width = img.getWidth() - 1;
         img = resize(img, Method.SPEED, width, OP_ANTIALIAS);
         img = toSepia(img, 80);
-        return pad(img,4);
+        return img;
     }
     
     public static BufferedImage createNegative(BufferedImage img)
@@ -309,96 +318,165 @@ public class PicModel {
 
     public Pic getPic(int image_type, java.util.UUID picid) {
         Session session = cluster.connect("instagrim");
+        System.out.println("Getting picture..");
         ByteBuffer bImage = null;
         String type = null;
         int length = 0;
+        Pic p = new Pic();
         try {
             Convertors convertor = new Convertors();
             ResultSet rs = null;
             PreparedStatement ps = null;
          
-            if (image_type == Convertors.DISPLAY_IMAGE || image_type == Convertors.DISPLAY_SEPIA) 
+            if (image_type == Convertors.DISPLAY_IMAGE) 
             {    
                 ps = session.prepare("select image,imagelength,type from pics where picid =?");
             } else if (image_type == Convertors.DISPLAY_THUMB) {
                 ps = session.prepare("select thumb,imagelength,thumblength,type from pics where picid =?");
-            } else if (image_type == Convertors.DISPLAY_PROCESSED || image_type == Convertors.DISPLAY_NEGATIVE) {
+            } else if (image_type == Convertors.DISPLAY_PROCESSED ) {
                 ps = session.prepare("select processed,processedlength,type from pics where picid =?");
+            } else if (image_type == Convertors.DISPLAY_NEGATIVE) {
+                ps = session.prepare("select image,imagelength,negative,negativelength,type from pics where picid =?");
+            } else if (image_type == Convertors.DISPLAY_SEPIA) {
+                System.out.println("Trying to fetch Sepia");
+                ps = session.prepare("select image,imagelength,sepia,sepialength,type from pics where picid =?");
             }
             BoundStatement boundStatement = new BoundStatement(ps);
             rs = session.execute( // this is where the query is executed
                     boundStatement.bind( // here you are binding the 'boundStatement'
                             picid));
 
-            if (rs.isExhausted()) {
+            
+            if (rs.isExhausted()) 
+            {
+                session.close();
                 System.out.println("No Images returned");
                 return null;
+                
             } else {
                 for (Row row : rs) {
-                    if (image_type == Convertors.DISPLAY_IMAGE || image_type == Convertors.DISPLAY_SEPIA) {
+                    //System.out.println(i);
+                    if (image_type == Convertors.DISPLAY_IMAGE) {
                         bImage = row.getBytes("image");
                         length = row.getInt("imagelength");
-                        System.out.println("got image");
+                        
                     } else if (image_type == Convertors.DISPLAY_THUMB) {
                         bImage = row.getBytes("thumb");
                         length = row.getInt("thumblength");
                 
-                    } else if (image_type == Convertors.DISPLAY_PROCESSED || image_type == Convertors.DISPLAY_NEGATIVE) {
+                    } else if (image_type == Convertors.DISPLAY_PROCESSED) {
                         bImage = row.getBytes("processed");
                         length = row.getInt("processedlength");
                     }
+                    else if (image_type == Convertors.DISPLAY_SEPIA)
+                    {
+                        bImage = row.getBytes("sepia");
+                        length = row.getInt("sepialength");
+                    }
+                    else if (image_type == Convertors.DISPLAY_NEGATIVE)
+                    {
+                        bImage = row.getBytes("negative");
+                        length = row.getInt("negativelength");
+                    }
                     type = row.getString("type");
+                    
+                    if(bImage == null && (image_type == Convertors.DISPLAY_SEPIA || image_type == Convertors.DISPLAY_NEGATIVE))
+                    {
+                        String types[]=Convertors.SplitFiletype(type);
+                        bImage = row.getBytes("image");  
+                        byte[] temp = new byte[bImage.remaining()];
+                        bImage.get(temp);
+                        byte[] bArray = applyFilter(image_type, types[1], temp);
+                        bImage = ByteBuffer.wrap(bArray);
+                        length = bArray.length;
+                        insertFiltered(image_type, bArray, picid);
+                    }
+                    
+                    p.setPic(bImage, length, type);
                 }
             }
         } catch (Exception et) {
             System.out.println("Can't get Pic" + et);
+            session.close();
             return null;
         }
         session.close();
-        Pic p = new Pic();
-        if (image_type == Convertors.DISPLAY_SEPIA || image_type == Convertors.DISPLAY_NEGATIVE)
-        {
-            System.out.println("Converting on the fly");
-            bImage = applyFilter(image_type,bImage,type);
-        }
-        p.setPic(bImage, length, type);
+//        if (image_type == Convertors.DISPLAY_SEPIA || image_type == Convertors.DISPLAY_NEGATIVE)
+//        {
+//            System.out.println("Converting on the fly");
+//            bImage = applyFilter(image_type,bImage,type);
+//        }
+
         return p;
+    } 
+    
+    private void insertFiltered(int image_type, byte[] bArray,  java.util.UUID picid)
+    {
+        Session session = cluster.connect("instagrim");
+        
+        int length = bArray.length;
+        ByteBuffer bImage = ByteBuffer.wrap(bArray);
+        
+        PreparedStatement psImage = null;
+
+        if (image_type == Convertors.DISPLAY_SEPIA )
+        {
+            System.out.println("Insertding Sepia..");
+            psImage = session.prepare("Update pics set sepia = ?, sepialength = ? where picid =?");
+        }
+        else if (image_type == Convertors.DISPLAY_NEGATIVE)
+        {
+            System.out.println("Insertding Negative..");
+            psImage = session.prepare("Update pics set negative = ?, negativelength = ? where picid =?");
+        }        
+        BoundStatement bsImage = new BoundStatement(psImage);
+        session.execute(bsImage.bind(bImage,length,picid));
+
+        session.close();
     }
     
-    private ByteBuffer applyFilter(int image_type, ByteBuffer bImage, String type)
+    private byte[] applyFilter(int image_type, String type, byte[] temp) throws IOException
     {
-        try
+        InputStream in = new ByteArrayInputStream(temp);
+        BufferedImage BI = ImageIO.read(in);
+        BufferedImage filtered = null;
+
+        if (image_type == Convertors.DISPLAY_SEPIA)
         {
-            String types[]=Convertors.SplitFiletype(type);
-            byte[] temp = new byte[bImage.remaining()];
-            bImage.get(temp);
-            InputStream in = new ByteArrayInputStream(temp);
-            BufferedImage bImageNew = ImageIO.read(in);
-            
-            if (image_type == Convertors.DISPLAY_SEPIA)
-            {
-                System.out.println("Converting to Sepia..");
-                bImageNew = createSepia(bImageNew);
-            }
-            else if (image_type == Convertors.DISPLAY_NEGATIVE)
-            {
-                System.out.println("Converting to negative...");
-                bImageNew = createNegative(bImageNew);
-            }
-            
-            ByteArrayOutputStream bs = new ByteArrayOutputStream();
-            ImageIO.write(bImageNew, types[1], bs);
-            bs.flush();
-            bImage = ByteBuffer.wrap(bs.toByteArray());
-            bs.close();
-            in.close();
-            System.out.println("done");
+            System.out.println("Converting to Sepia..");
+             filtered = createSepia(BI);
         }
-        catch (IOException ioe)
+        else if (image_type == Convertors.DISPLAY_NEGATIVE)
         {
-            
+            System.out.println("Converting to negative...");
+            filtered = createNegative(BI);
         }
-        return bImage;
+        ByteArrayOutputStream bs = new ByteArrayOutputStream();
+        ImageIO.write(filtered, type, bs);
+        bs.flush();
+
+        byte[] imageInByte = bs.toByteArray();
+        bs.close();
+        in.close();
+        return imageInByte;
+        
+        /*ByteArrayOutputStream bs;
+        String types[]=Convertors.SplitFiletype(type);
+        byte[] temp = new byte[bImage.remaining()];
+        bImage.get(temp);
+        InputStream in = new ByteArrayInputStream(temp);
+        BufferedImage bImageNew = ImageIO.read(in);
+
+        bs = new ByteArrayOutputStream();
+        ImageIO.write(bImageNew, types[1], bs);
+        bs.flush();
+        System.out.println("done");
+
+        byte[] bArray = bs.toByteArray();
+        bs.close();
+        in.close();
+
+        return bArray;*/
     } 
 
 }
