@@ -25,6 +25,7 @@ import javax.servlet.http.Part;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.lib.Error;
+import uk.ac.dundee.computing.aec.instagrim.lib.UserPermission;
 import uk.ac.dundee.computing.aec.instagrim.models.PicModel;
 import uk.ac.dundee.computing.aec.instagrim.models.UserModel;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
@@ -143,8 +144,13 @@ public class Profile extends HttpServlet {
         UserModel user = new UserModel();
         user.setCluster(cluster);
 
-        if (!userMatch(owner, request)) {
-            Error.error("You do not have permission to do that!", request, response);
+        HttpSession session = request.getSession();
+        LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+
+        String permission = UserPermission.hasPermission(UserPermission.OWNER_MATCH, lg, owner);
+        if (!permission.equals("success"))
+        {
+            Error.error(permission, request, response);
             return;
         }
 
@@ -188,14 +194,17 @@ public class Profile extends HttpServlet {
         UserModel us = new UserModel();
         us.setCluster(cluster);
 
-        if (!userMatch(owner, request)) {
-            Error.error("You do not have permission to do that!", request, response);
+        HttpSession session = request.getSession();
+        LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+
+        String permission = UserPermission.hasPermission(UserPermission.OWNER_MATCH, lg, owner);
+        
+        if (!permission.equals("success"))
+        {
+            Error.error(permission, request, response);
             return;
         }
-
-        HttpSession session = request.getSession();
         System.out.println("Session in servlet " + session);
-        LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
         String current = lg.getUsername();
 
         us.updateUserDetails(current, firstname, lastname, mails, street, city, zipcode);
@@ -204,7 +213,9 @@ public class Profile extends HttpServlet {
 
     private void uploadProfilePic(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String owner = request.getParameter("owner");
-
+        UserModel um = new UserModel();
+        um.setCluster(cluster);
+        
         for (Part part : request.getParts()) {
             System.out.println("Part Name " + part.getName());
             if (part.getName().equals("upfile"))
@@ -222,29 +233,23 @@ public class Profile extends HttpServlet {
                 //String filename = part.getSubmittedFileName();
                 InputStream is = request.getPart(part.getName()).getInputStream();
                 int i = is.available();
+                
                 HttpSession session = request.getSession();
                 LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
-                String username = "";
-                if (lg.getlogedin()) {
-                    username = lg.getUsername();
-                } else {
-                    Error.error("You are not logged in!", request, response);
-                    return;
-                }
-                if (!username.equals(owner)) {
-                    System.out.println("username: " + username + " owner: " + owner);
-                    Error.error("You do not have permission to do that!", request, response);
-                    return;
-                }
 
+                String permission = UserPermission.hasPermission(UserPermission.OWNER_MATCH, lg, owner);
+                if (!permission.equals("success"))
+                {
+                    Error.error(permission, request, response);
+                    return;
+                }
+                
                 if (i > 0) {
                     // Watch for negative array size..
                     byte[] b = new byte[i + 1];
                     is.read(b);
-                    System.out.println("Length : " + b.length);
-                    UserModel u = new UserModel();
-                    u.setCluster(cluster);
-                    u.insertProfilePic(b, owner, type);
+                    System.out.println("Length : " + b.length);;
+                    um.insertProfilePic(b, owner, type);
                     is.close();
                 }
                 response.sendRedirect("/Instagrim/Profile/View/" + owner);    
@@ -295,20 +300,20 @@ public class Profile extends HttpServlet {
 
     }
 
-    private boolean userMatch(String owner, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-
-        LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
-        if (lg == null || !lg.getlogedin()) {
-            return false;
-        }
-
-        String current = lg.getUsername();
-        if (!current.equals(owner)) {
-            return false;
-        }
-        return true;
-    }
+//    private boolean userMatch(String owner, HttpServletRequest request) {
+//        HttpSession session = request.getSession();
+//
+//        LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+//        if (lg == null || !lg.getlogedin()) {
+//            return false;
+//        }
+//
+//        String current = lg.getUsername();
+//        if (!current.equals(owner)) {
+//            return false;
+//        }
+//        return true;
+//    }
     
     @Override
     public void destroy()

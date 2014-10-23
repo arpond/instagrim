@@ -30,6 +30,8 @@ import org.apache.commons.fileupload.util.Streams;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.lib.Error;
+import uk.ac.dundee.computing.aec.instagrim.lib.UserPermission;
+import uk.ac.dundee.computing.aec.instagrim.models.UserModel;
 import uk.ac.dundee.computing.aec.instagrim.models.PicModel;
 import uk.ac.dundee.computing.aec.instagrim.models.CommentModel;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
@@ -152,31 +154,24 @@ public class Image extends HttpServlet {
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
         java.util.LinkedList<Pic> lsPics = tm.getPicsForUser(owner);
-        String user;
-        
+         
         HttpSession session = request.getSession();
         LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
-        if (lg == null || !lg.getlogedin())
+        
+        String permission = UserPermission.hasPermission(UserPermission.OWNER_MATCH, lg, owner);
+        
+        if (!permission.equals("success"))
         {
-            user = "";
+           request.setAttribute("Match", false);
         }
         else
-        {
-            user = lg.getUsername();
-        }
-        
-        RequestDispatcher rd = request.getRequestDispatcher("/UsersPics.jsp");
-     
-        if (user.equals(owner))
         {
             request.setAttribute("Match",true);
         }
-        else
-        {
-            request.setAttribute("Match", false);
-        }
+        
         request.setAttribute("Owner", owner);
         request.setAttribute("Pics", lsPics);
+        RequestDispatcher rd = request.getRequestDispatcher("/UsersPics.jsp");
         rd.forward(request, response);
     }
     
@@ -207,6 +202,7 @@ public class Image extends HttpServlet {
         }
         out.close();
     }
+    
     public void DisplayComments(String image, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException
     {
         System.out.println("Comments");
@@ -235,24 +231,18 @@ public class Image extends HttpServlet {
     {
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
+        
         HttpSession session = request.getSession();
         LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
-        if (lg == null || !lg.getlogedin())
+        
+        String permission = UserPermission.hasPermission(UserPermission.OWNER_MATCH, lg, owner);
+        
+        if (!permission.equals("success"))
         {
-            //Error.error(, request, response);
-            return "You are not logged in!";
+            return permission;
         }
         
-        String user = lg.getUsername();
-        System.out.println("Owner: " + owner + " User: " + user);
-        if (!user.equals(owner))
-        {
-            //Error.error(, request, response);
-            return "You do not have permission to do that!";
-        }
-        //boolean success = tm.picDelete(user, picid);
-        
-        String success = tm.picDelete(user, java.util.UUID.fromString(picid));  
+        String success = tm.picDelete(owner, java.util.UUID.fromString(picid));  
         if (!success.equals("success"))
         {
             //Error.error("Image Not Found" + success, request, response);
@@ -287,17 +277,19 @@ public class Image extends HttpServlet {
             String filename = part.getSubmittedFileName();
             InputStream is = request.getPart(part.getName()).getInputStream();
             int i = is.available();
-            HttpSession session=request.getSession();
-            LoggedIn lg= (LoggedIn)session.getAttribute("LoggedIn");    
-            String username="majed";
-            if (lg.getlogedin()){
-                username=lg.getUsername();
-            }
-            else
+
+            HttpSession session = request.getSession();
+            LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+
+            String permission = UserPermission.hasPermission(UserPermission.LOGGED_IN, lg, "");
+            
+            if (!permission.equals("success"))
             {
-                Error.error("You are not logged in!", request, response);
+                Error.error(permission, request, response);
                 return;
             }
+            String username = lg.getUsername();
+            
             if (i > 0) {
                 // Watch for negative array size..
                 byte[] b = new byte[i+1];

@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Error;
+import uk.ac.dundee.computing.aec.instagrim.lib.UserPermission;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 import uk.ac.dundee.computing.aec.instagrim.models.CommentModel;
 
@@ -46,9 +47,11 @@ public class CommentServlet  extends HttpServlet {
         
         HttpSession session = request.getSession();
         LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
-        if (lg == null || !lg.getlogedin())
+        String permission = UserPermission.hasPermission(UserPermission.LOGGED_IN, lg, "");
+        
+        if (!permission.equals("success"))
         {
-            Error.error("You are not logged in!", request, response);
+            Error.error(permission, request, response);
             return;
         }
         String user = lg.getUsername();
