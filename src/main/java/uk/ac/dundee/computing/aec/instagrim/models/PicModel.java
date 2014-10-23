@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import javax.imageio.ImageIO;
 import static org.imgscalr.Scalr.*;
@@ -118,9 +119,11 @@ public class PicModel {
             PreparedStatement psInsertedTime = session.prepare("SELECT interaction_time, user FROM pics WHERE picid = ?");
             PreparedStatement psDeletePic = session.prepare("DELETE FROM pics WHERE picid = ?");
             PreparedStatement psDeletePicUserPicList = session.prepare("DELETE FROM userpiclist WHERE user = ? AND pic_added = ?");
+            PreparedStatement psDeletePicComments = session.prepare("DELETE FROM comments WHERE picid = ?");
             BoundStatement bsInsertedTime = new BoundStatement(psInsertedTime);
             BoundStatement bsDeletePic = new BoundStatement(psDeletePic);
             BoundStatement bsDeletePicUserPicList = new BoundStatement(psDeletePicUserPicList);
+            BoundStatement bsDeletePicComments = new BoundStatement(psDeletePicComments);
             
             ResultSet rs = session.execute(bsInsertedTime.bind(picid));
             Date dateAdded = new Date();
@@ -142,6 +145,7 @@ public class PicModel {
             {
                 session.execute(bsDeletePic.bind(picid));
                 session.execute(bsDeletePicUserPicList.bind(user, dateAdded));
+                session.execute(bsDeletePicComments.bind(picid));
                 session.close();
                 return "success";
             }
@@ -304,18 +308,76 @@ public class PicModel {
             System.out.println("No Images returned");
             return null;
         } else {
+            TagModel tm = new TagModel();
+            tm.setCluster(cluster);
             for (Row row : rs) {
                 Pic pic = new Pic();
                 java.util.UUID UUID = row.getUUID("picid");
                 System.out.println("UUID" + UUID.toString());
                 pic.setUUID(UUID);
+                pic.setTags(tm.getTags(UUID));
                 Pics.add(pic);
-
             }
         }
         return Pics;
     }
+    
+    public void addTagToPic(String tag, java.util.UUID picid)
+    {
+        System.out.println("Adding " + tag + " to pic");
+        Session session = cluster.connect("instagrim");
+        TagModel tm = new TagModel();
+        tm.setCluster(cluster);
+        java.util.UUID tagid = null;
+        if (tm.tagExists(tag))
+        {
+            tagid = tm.getTagID(tag);
+        }
+        else
+        {
+            tagid = tm.addNewTag(tag);
+        }
+        PreparedStatement psAddTagToPic = session.prepare("insert into tagpic (tagid, picid) values (?,?)");
+        BoundStatement bsAddTagToPic = new BoundStatement(psAddTagToPic);
+        session.execute(bsAddTagToPic.bind(tagid, picid));
+    }
+    
+    public void deleteTagFromPic(String tag, java.util.UUID picid)
+    {
+        System.out.println("Deleting " + tag + " from pic");
+        Session session = cluster.connect("instagrim");
+        TagModel tm = new TagModel();
+        tm.setCluster(cluster);
+        java.util.UUID tagid = tm.getTagID(tag);
+        PreparedStatement psDelTagFromPic = session.prepare("DELETE FROM tagpic WHERE picid = ? and tagid = ?");
+        BoundStatement bsDelTagFromPic = new BoundStatement(psDelTagFromPic);
+        session.execute(bsDelTagFromPic.bind(picid, tagid));
+    }
 
+    public LinkedList<Pic> getTaggedPic(String tag)
+    {
+        java.util.LinkedList<Pic> pics = new java.util.LinkedList<>();
+        //java.util.LinkedList<java.util.UUID> picIDs = new java.util.LinkedList<>();
+        Session session = cluster.connect("instagrim");
+        TagModel tm = new TagModel();
+        tm.setCluster(cluster);
+        
+        java.util.UUID tagid = tm.getTagID("tagid");
+        
+        PreparedStatement psPics = session.prepare("select picid from tagpic where tagid = ?");
+        BoundStatement bsPics = new BoundStatement(psPics);
+        ResultSet rs = null;
+        rs = session.execute(bsPics.bind(tagid));
+        for (Row row : rs)
+        {
+            java.util.UUID picid = row.getUUID("picid");
+            Pic p = getPic(Convertors.DISPLAY_THUMB, picid);
+            pics.add(p);
+        }   
+        session.close();
+        return pics;
+    }
+    
     public Pic getPic(int image_type, java.util.UUID picid) {
         Session session = cluster.connect("instagrim");
         System.out.println("Getting picture..");
@@ -459,24 +521,5 @@ public class PicModel {
         bs.close();
         in.close();
         return imageInByte;
-        
-        /*ByteArrayOutputStream bs;
-        String types[]=Convertors.SplitFiletype(type);
-        byte[] temp = new byte[bImage.remaining()];
-        bImage.get(temp);
-        InputStream in = new ByteArrayInputStream(temp);
-        BufferedImage bImageNew = ImageIO.read(in);
-
-        bs = new ByteArrayOutputStream();
-        ImageIO.write(bImageNew, types[1], bs);
-        bs.flush();
-        System.out.println("done");
-
-        byte[] bArray = bs.toByteArray();
-        bs.close();
-        in.close();
-
-        return bArray;*/
     } 
-
 }

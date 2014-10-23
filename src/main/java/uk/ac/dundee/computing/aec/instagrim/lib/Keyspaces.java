@@ -67,6 +67,22 @@ public final class Keyspaces {
                     + "      writtenOn timestamp,\n"
                     + "      PRIMARY KEY (picid, writtenOn)\n"
                     + ");";
+            String CreateTags = "CREATE TABLE if not exists instagrim.tags(\n"
+                    + "      tagid uuid,\n"
+                    + "      tag varchar,\n"
+                    + "      PRIMARY KEY (tagid,tag)\n"
+                    + ");";
+            String CreateTagsToPic = "CREATE TABLE if not exists instagrim.tagpic(\n"
+                    + "      tagid uuid,\n"
+                    + "      picid uuid,\n"
+                    + "      PRIMARY KEY (picid, tagid)\n"
+                    + ");";
+            /*String CreateFavourites = "CREATE TABLE if not exists instagrim.favourites(\n"
+                    + "      user text,\n"
+                    + "      picid uuid,\n"
+                    + "      PRIMARY KEY (user, picid)\n"
+                    + ");";*/
+            
             Session session = c.connect();
             try {
                 PreparedStatement statement = session
@@ -117,6 +133,20 @@ public final class Keyspaces {
                 session.execute(cqlQuery);
             } catch (Exception et) {
                 System.out.println("Can't create comments table " + et);
+            }
+            System.out.println("" + CreateTags);
+            try {
+                SimpleStatement cqlQuery = new SimpleStatement(CreateTags);
+                session.execute(cqlQuery);
+            } catch (Exception et) {
+                System.out.println("Can't create tags table" + et);
+            }
+            System.out.println("" + CreateTagsToPic);
+            try {
+                SimpleStatement cqlQuery = new SimpleStatement(CreateTagsToPic);
+                session.execute(cqlQuery);
+            } catch (Exception et) {
+                System.out.println("Can't create tags to picture table" + et);
             }
             
             session.close();

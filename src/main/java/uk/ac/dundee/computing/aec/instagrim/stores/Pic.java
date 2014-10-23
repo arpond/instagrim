@@ -7,6 +7,7 @@ package uk.ac.dundee.computing.aec.instagrim.stores;
 
 import com.datastax.driver.core.utils.Bytes;
 import java.nio.ByteBuffer;
+import java.util.HashSet;
 
 /**
  *
@@ -18,6 +19,7 @@ public class Pic {
     private int length;
     private String type;
     private java.util.UUID UUID=null;
+    private HashSet<String> tags = new HashSet<String>();
     
     public void Pic() {
 
@@ -32,6 +34,14 @@ public class Pic {
         this.bImage = bImage;
         this.length = length;
         this.type=type;
+    }
+
+    public HashSet<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(HashSet<String> tags) {
+        this.tags = tags;
     }
 
     public ByteBuffer getBuffer() {
@@ -51,5 +61,7 @@ public class Pic {
         byte image[] = Bytes.getArray(bImage);
         return image;
     }
+    
+    
 
 }

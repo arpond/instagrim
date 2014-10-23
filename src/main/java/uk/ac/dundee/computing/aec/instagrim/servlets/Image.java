@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import javax.persistence.Convert;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -34,6 +36,7 @@ import uk.ac.dundee.computing.aec.instagrim.lib.UserPermission;
 import uk.ac.dundee.computing.aec.instagrim.models.UserModel;
 import uk.ac.dundee.computing.aec.instagrim.models.PicModel;
 import uk.ac.dundee.computing.aec.instagrim.models.CommentModel;
+import uk.ac.dundee.computing.aec.instagrim.models.TagModel;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 import uk.ac.dundee.computing.aec.instagrim.stores.Comment;
@@ -303,6 +306,88 @@ public class Image extends HttpServlet {
             }
             RequestDispatcher rd = request.getRequestDispatcher("/upload.jsp");
             rd.forward(request, response);
+        }
+    }
+    
+    private void updateTags(String picid, String[] tags)
+    {   
+        System.out.println("Updating Tags..");
+        TagModel tm = new TagModel();
+        tm.setCluster(cluster);
+        java.util.UUID picUUID = java.util.UUID.fromString(picid);
+        HashSet<String> oldTags = tm.getTags(picUUID);
+        HashSet<String> newTags = new HashSet<String>();
+        for (String tag : tags)
+        {
+            newTags.add(tag);
+        }
+        HashSet<String> toDelete = oldTags;
+        HashSet<String> toAdd = newTags;
+        toDelete.removeAll(newTags);
+        toAdd.removeAll(oldTags);
+        
+        PicModel pm = new PicModel();
+        pm.setCluster(cluster);
+               
+        if (!toDelete.isEmpty())
+        {
+            System.out.println("deleting..");
+            Iterator<String> itDel;
+            itDel = toDelete.iterator();
+            while (itDel.hasNext())
+            {
+                pm.deleteTagFromPic(itDel.next(), picUUID);
+            }
+        }
+        
+        if (!toAdd.isEmpty())
+        {
+            System.out.println("adding..");
+            Iterator<String> itAdd;
+            itAdd = toAdd.iterator();
+            while (itAdd.hasNext())
+            {
+                pm.addTagToPic(itAdd.next(), picUUID);
+            }
+        }
+    }
+    
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        System.out.println("Inside doPut..");
+        String args[] = Convertors.SplitRequestPath(request);
+
+        System.out.println("Arguments: ");
+        for (String arg : args)
+        {
+            System.out.println(arg);
+        }
+        
+        System.out.println("Tags: " + args[4]);
+        String owner = args[2];
+        String picid = args[3];
+        String tags[] = args[4].split(",");
+       
+        for (String tag : tags)
+        {
+            System.out.println(tag);
+        }
+        HttpSession session = request.getSession();
+        LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+
+        response.setContentType("application/json");
+        String permission = UserPermission.hasPermission(UserPermission.OWNER_MATCH, lg, owner);
+        if (!permission.equals("success"))
+        {
+            System.out.println("Fail Permission");
+            response.getWriter().write("{ \"success\": false, \"message\": \"" + permission + "\" }");
+        }
+        else
+        {
+            updateTags(picid,tags);
+            System.out.println("Success");
+            response.getWriter().write("{ \"success\": true, \"message\": \"Tags Updated\" }");
         }
     }
     
