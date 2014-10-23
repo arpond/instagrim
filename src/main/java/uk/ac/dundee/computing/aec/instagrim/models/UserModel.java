@@ -31,16 +31,18 @@ import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
 import uk.ac.dundee.computing.aec.instagrim.lib.AeSimpleSHA1;
 import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
-import uk.ac.dundee.computing.aec.instagrim.lib.simpleSHA256;
-import uk.ac.dundee.computing.aec.instagrim.lib.saltGenerator;
+import uk.ac.dundee.computing.aec.instagrim.lib.ApSimpleSHA256;
+import uk.ac.dundee.computing.aec.instagrim.lib.Salting;
 import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 import uk.ac.dundee.computing.aec.instagrim.stores.UserDetails;
+import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 
 /**
  *
  * @author Administrator
  */
 public class UserModel {
+            
     Cluster cluster;
     public UserModel(){
         
@@ -58,8 +60,8 @@ public class UserModel {
             return "Can't encode your password";
         }*/
         
-        simpleSHA256 sha256handler = new simpleSHA256();
-        saltGenerator saltShaker = new saltGenerator();
+        ApSimpleSHA256 sha256handler = new ApSimpleSHA256();
+        Salting saltShaker = new Salting();
         String encodedPassword = null;
         String salt = null;
         try
@@ -127,7 +129,7 @@ public class UserModel {
     
     public boolean IsValidUser(String username, String password){
          
-        simpleSHA256 sha256handler = new simpleSHA256();
+        ApSimpleSHA256 sha256handler = new ApSimpleSHA256();
         String encodedPassword = null;
         
         Session session = cluster.connect("instagrim");
@@ -291,7 +293,5 @@ public class UserModel {
         p.setPic(bImage, length, type);
         return p;
     }
-
-
     
 }
