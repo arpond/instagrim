@@ -55,12 +55,10 @@ public class Tags  extends HttpServlet {
             Error.error("ArrayOutOfBounds", request, response);
             return;
         }
-        //String search = (String) request.getAttribute("search");
         
         TagModel tm = new TagModel();
         tm.setCluster(cluster);
         LinkedList<Pic> pics = new LinkedList<Pic>();
-        
         if (!tm.tagExists(tag))
         {
             System.out.println("No results");
