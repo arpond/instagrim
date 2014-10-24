@@ -126,7 +126,14 @@ public class Image extends HttpServlet {
                 DisplayImage(Convertors.DISPLAY_PROCESSED,args[2], response, request);
                 break;
             case 2:
-                DisplayImageList(args[2], request, response);
+                if (args.length == 2)
+                {
+                    DisplayLatestImages(request,response);
+                }
+                else
+                {
+                    DisplayImageList(args[2], request, response);
+                }
                 break;
             case 3:
                 DisplayImage(Convertors.DISPLAY_THUMB,args[2],  response, request);
@@ -152,6 +159,17 @@ public class Image extends HttpServlet {
             Error.error("ArrayOutOfBounds",  request, response);
         }  
     }
+    
+    private void DisplayLatestImages(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+    {
+        PicModel pm = new PicModel();
+        pm.setCluster(cluster);
+        java.util.LinkedList<Pic> lsPics = pm.getLatestPics();
+        
+        request.setAttribute("Pics", lsPics);
+        RequestDispatcher rd = request.getRequestDispatcher("/latestPics.jsp");
+        rd.forward(request, response);
+    }       
 
     private void DisplayImageList(String owner, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PicModel tm = new PicModel();

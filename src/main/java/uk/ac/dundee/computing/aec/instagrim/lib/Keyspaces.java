@@ -70,6 +70,7 @@ public final class Keyspaces {
             String CreateTags = "CREATE TABLE if not exists instagrim.tags(\n"
                     + "      tagid uuid,\n"
                     + "      tag varchar,\n"
+                    + "      count int,\n"
                     + "      PRIMARY KEY (tagid,tag)\n"
                     + ");";
             String CreateTagsToPic = "CREATE TABLE if not exists instagrim.tagpic(\n"

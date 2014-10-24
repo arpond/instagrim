@@ -338,8 +338,12 @@ public class PicModel {
             tagid = tm.addNewTag(tag);
         }
         PreparedStatement psAddTagToPic = session.prepare("insert into tagpic (tagid, picid) values (?,?)");
+        PreparedStatement psIncreaseCount = session.prepare("UPDATE tags SET count=count+1 WHERE tagid = ? and tag = ?");
         BoundStatement bsAddTagToPic = new BoundStatement(psAddTagToPic);
+        BoundStatement bsIncreaseCount = new BoundStatement(psIncreaseCount);
         session.execute(bsAddTagToPic.bind(tagid, picid));
+        session.execute(bsIncreaseCount.bind(tagid,tag));
+        session.close();
     }
     
     public void deleteTagFromPic(String tag, java.util.UUID picid)
@@ -350,8 +354,12 @@ public class PicModel {
         tm.setCluster(cluster);
         java.util.UUID tagid = tm.getTagID(tag);
         PreparedStatement psDelTagFromPic = session.prepare("DELETE FROM tagpic WHERE picid = ? and tagid = ?");
+        PreparedStatement psReduceCount = session.prepare("UPDATE tags SET count=count-1 WHERE tagid = ? and tag = ?");
         BoundStatement bsDelTagFromPic = new BoundStatement(psDelTagFromPic);
+        BoundStatement bsReduceCount = new BoundStatement(psReduceCount);
         session.execute(bsDelTagFromPic.bind(picid, tagid));
+        session.execute(bsReduceCount.bind(tagid,tag));
+        session.close();
     }
 
     public LinkedList<Pic> getTaggedPics(String tag)
@@ -379,6 +387,37 @@ public class PicModel {
         }   
         session.close();
         return pics;
+    }
+
+    public LinkedList<Pic> getLatestPics()
+    {
+        LinkedList<Pic> latest = new LinkedList<Pic>();
+        Session session = cluster.connect("instagrim");
+        PreparedStatement psLatest = session.prepare("select picid, user from userpiclist Limit 64");
+        BoundStatement bsLatest = new BoundStatement(psLatest);
+        ResultSet rs = null;
+        rs = session.execute(bsLatest);
+        if(rs.isExhausted())
+        {
+            System.out.println("No latest pics");
+            return latest;       
+        }
+        TagModel tm = new TagModel();
+        tm.setCluster(cluster);
+        
+        for (Row row : rs)
+        {
+            Pic pic = new Pic();
+            java.util.UUID UUID = row.getUUID("picid");
+            String owner = row.getString("user");
+            System.out.println("UUID" + UUID.toString());
+            pic.setUUID(UUID);
+            pic.setOwner(owner);
+            pic.setTags(tm.getTags(UUID));
+            latest.add(pic);
+        }
+                        //pic.setTags(tm.getTags(UUID));
+        return latest;
     }
     
     public Pic getPic(int image_type, java.util.UUID picid) {
