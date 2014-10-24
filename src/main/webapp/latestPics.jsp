@@ -82,7 +82,8 @@
             %>
             <div class="<%=p.getSUUID()%>">
                 <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
-                <p>Owner: <%=p.getOwner()%></p>
+                <p>Owner: <a href="/Instagrim/Profile/View/<%=p.getOwner()%>" ><%=p.getOwner()%></a></p>
+                <p><a href="/Instagrim/Image/Comments/<%=p.getSUUID()%>">View Comments</a></p>
                 <p><h3 class="<%=p.getSUUID()%>">Tags: <%=tags%></h3>
                 </p>
             </div>

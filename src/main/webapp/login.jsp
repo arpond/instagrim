@@ -19,9 +19,30 @@
         <h2>Your world in Black and White</h2>
         </header>
         <nav>
-            <ul>
-                
-                <li><a href="/Instagrim/Images/majed">Sample Images</a></li>
+            <ul id="mainmenu">
+                    <%
+                        
+                        LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+                        if (lg != null) {
+                            String UserName = lg.getUsername();
+                            if (lg.getlogedin()) {
+                    %>
+                <li><a href="/Instagrim/Images/">Latest Images</a></li>
+                <li><a href="upload.jsp">Upload</a></li>
+                <li><a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a></li>
+                <li><a href="/Instagrim/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
+                <li><a href="/Instagrim/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
+                <li><a href="/Instagrim/Logout">Logout</a></li>
+                    <%}
+                            }else{
+                                %>
+                <li><a href="/Instagrim/Images/">Latest Images</a></li>
+                <li><a href="register.jsp">Register</a></li>
+                <li><a href="login.jsp">Login</a></li>
+                <%
+                                        
+                            
+                    }%>
             </ul>
         </nav>
        

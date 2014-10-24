@@ -24,9 +24,28 @@
         </header>
         
         <nav>
-            <ul>
-                <li class="nav"><a href="/Instagrim/upload.jsp">Upload</a></li>
-                <li class="nav"><a href="/Instagrim/Images/majed">Sample Images</a></li>
+            <ul id="mainmenu">
+                    <%
+
+                LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+                if (lg != null) {
+                    String UserName = lg.getUsername();
+                    if (lg.getlogedin()) {
+                    %>
+                <li><a href="/Instagrim/Images/">Latest Images</a></li>
+                <li><a href="upload.jsp">Upload</a></li>
+                <li><a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a></li>
+                <li><a href="/Instagrim/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
+                <li><a href="/Instagrim/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
+                <li><a href="/Instagrim/Logout">Logout</a></li>
+                <%  }
+                }else{
+                %>
+                <li><a href="/Instagrim/Images/">Latest Images</a></li>
+                <li><a href="register.jsp">Register</a></li>
+                <li><a href="login.jsp">Login</a></li>
+                <%
+                }%>
             </ul>
         </nav>
  
@@ -84,8 +103,10 @@
                 if (match)
                 {%>
             <button type="button" onclick="deleteImage('<%=p.getSUUID()%>', '<%=owner%>');">Delete</button>
-                <p><h3 class="<%=p.getSUUID()%>">Tags: <%=tags%></h3><button type="button" onclick="showEditTags('<%=p.getSUUID()%>');" id="<%=p.getSUUID()%>">Edit Tags</button>
-            </p>
+            <div class="tags"><h3 class="<%=p.getSUUID()%>">Tags: <%=tags%></h3><button type="button" onclick="showEditTags('<%=p.getSUUID()%>');" id="<%=p.getSUUID()%>">Edit Tags</button>
+            </div>
+            <div class="filters">Additional Filters: <a href="/Instagrim/Image/Sepia/<%=p.getSUUID()%>">Sepia</a>, <a href="/Instagrim/Image/Negative/<%=p.getSUUID()%>">Negative</div>
+            <div class="comment"><a href="/Instagrim/Image/Comments/<%=p.getSUUID()%>">View Comments</a></div>
             <div class="hide" id="tag<%=p.getSUUID()%>">
                 <input type="text" name="tagUpdate" class="<%=p.getSUUID()%>" value="<%=tags%>">
                 <button type="button" onclick="updateTags('<%=p.getSUUID()%>', '<%=owner%>');">Update Tags</button>

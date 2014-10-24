@@ -6,6 +6,7 @@
 
 
 
+<%@page import="uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.Set" %>
 <%@page import="java.util.Date" %>
@@ -22,6 +23,7 @@
         <header>
             <h1>InstaGrim ! </h1>
             <h2>Your world in Black and White</h2>
+        </header>
             <%
             UserDetails userDetails = (UserDetails) request.getAttribute("details");
             String owner = userDetails.getUsername();
@@ -55,6 +57,33 @@
                 zipcode = Integer.toString(zip);
             }
             %>
+            <nav>
+                <ul id="mainmenu">
+                        <%
+
+                            LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+                            if (lg != null) {
+                                String UserName = lg.getUsername();
+                                if (lg.getlogedin()) {
+                        %>
+                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
+                    <li><a href="upload.jsp">Upload</a></li>
+                    <li><a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a></li>
+                    <li><a href="/Instagrim/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
+                    <li><a href="/Instagrim/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
+                    <li><a href="/Instagrim/Logout">Logout</a></li>
+                        <%}
+                                }else{
+                                    %>
+                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
+                    <li><a href="register.jsp">Register</a></li>
+                    <li><a href="login.jsp">Login</a></li>
+                    <%
+
+
+                        }%>
+                </ul>
+            </nav>
             <div>
                 <h2>Profile: <%=owner%></h2>
                 <br/>
@@ -85,6 +114,20 @@
                 </li>
                 <li>Joined: <%=joined.toString()%></li>
             </ul>
+        <%
+            if (lg != null)
+            {
+                String user = lg.getUsername();
+                if (!user.equals(owner))
+                {%>
+                <a href="/Instagrim/Images/<%=owner%>">View <%=owner%>'s gallery</a>
+              <%}
+            }
+            else
+            {%>
+                <a href="/Instagrim/Images/<%=owner%>">View <%=owner%>'s gallery</a>
+          <%}
+        %>
         </header>
     </body>
 </html>
