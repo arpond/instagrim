@@ -354,7 +354,7 @@ public class PicModel {
         session.execute(bsDelTagFromPic.bind(picid, tagid));
     }
 
-    public LinkedList<Pic> getTaggedPic(String tag)
+    public LinkedList<Pic> getTaggedPics(String tag)
     {
         java.util.LinkedList<Pic> pics = new java.util.LinkedList<>();
         //java.util.LinkedList<java.util.UUID> picIDs = new java.util.LinkedList<>();
@@ -362,17 +362,20 @@ public class PicModel {
         TagModel tm = new TagModel();
         tm.setCluster(cluster);
         
-        java.util.UUID tagid = tm.getTagID("tagid");
+        java.util.UUID tagid = tm.getTagID(tag);
         
-        PreparedStatement psPics = session.prepare("select picid from tagpic where tagid = ?");
+        PreparedStatement psPics = session.prepare("select picid from tagpic where tagid = ? ALLOW FILTERING");
         BoundStatement bsPics = new BoundStatement(psPics);
         ResultSet rs = null;
         rs = session.execute(bsPics.bind(tagid));
         for (Row row : rs)
         {
-            java.util.UUID picid = row.getUUID("picid");
-            Pic p = getPic(Convertors.DISPLAY_THUMB, picid);
-            pics.add(p);
+            Pic pic = new Pic();
+            java.util.UUID UUID = row.getUUID("picid");
+            System.out.println("UUID" + UUID.toString());
+            pic.setUUID(UUID);
+            pic.setTags(tm.getTags(UUID));
+            pics.add(pic);
         }   
         session.close();
         return pics;
