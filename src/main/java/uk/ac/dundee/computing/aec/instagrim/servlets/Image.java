@@ -52,8 +52,6 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Comment;
     "/Images/*",
     "/Delete/",
     "/Delete/*",
-    "/Alter/*",
-    "/Alter/",
 })
 @MultipartConfig
 
@@ -103,11 +101,12 @@ public class Image extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // TODO Auto-generated method stub
         String args[] = Convertors.SplitRequestPath(request);
-        int command;
+        int command, command2 = 0;
         try {
             try
             {
                 command = (Integer) CommandsMap.get(args[2]);
+                command2 = (Integer) CommandsMap.get(args[1]);
             }
             catch (Exception et)
             {
@@ -142,13 +141,34 @@ public class Image extends HttpServlet {
                 //DeleteImage(args[3], args[2], request, response);
                 //break;
             case 5:
-                DisplayComments(args[3],  response, request);
+                if (command2 == 1)
+                {
+                    DisplayComments(args[3],  response, request);
+                }
+                else
+                {
+                    Error.error("Bad Operator",  request, response);
+                }
                 break;
             case 6:
-                DisplayImage(Convertors.DISPLAY_SEPIA,args[3], response, request);
+                if (command2 == 1)
+                {   
+                    DisplayImage(Convertors.DISPLAY_SEPIA,args[3], response, request);
+                }
+                else
+                {
+                    Error.error("Bad Operator",  request, response);
+                }
                 break;
             case 7:
-                DisplayImage(Convertors.DISPLAY_NEGATIVE,args[3],response,request);
+                if (command2 == 1)
+                {
+                    DisplayImage(Convertors.DISPLAY_NEGATIVE,args[3],response,request);
+                }
+                else
+                {
+                    Error.error("Bad Operator",  request, response);
+                }
                 break;
             default:
                 Error.error("Bad Operator",  request, response);
@@ -339,8 +359,8 @@ public class Image extends HttpServlet {
         {
             newTags.add(tag);
         }
-        HashSet<String> toDelete = oldTags;
-        HashSet<String> toAdd = newTags;
+        HashSet<String> toDelete = new HashSet<String>(oldTags);
+        HashSet<String> toAdd = new HashSet<String>(newTags);
         toDelete.removeAll(newTags);
         toAdd.removeAll(oldTags);
         

@@ -66,11 +66,11 @@ public final class Keyspaces {
                     + "      comment text,\n"
                     + "      writtenOn timestamp,\n"
                     + "      PRIMARY KEY (picid, writtenOn)\n"
-                    + ");";
+                    + ") WITH CLUSTERING ORDER BY (writtenOn desc);";
             String CreateTags = "CREATE TABLE if not exists instagrim.tags(\n"
                     + "      tagid uuid,\n"
                     + "      tag varchar,\n"
-                    + "      count int,\n"
+                    + "      count counter,\n"
                     + "      PRIMARY KEY (tagid,tag)\n"
                     + ");";
             String CreateTagsToPic = "CREATE TABLE if not exists instagrim.tagpic(\n"

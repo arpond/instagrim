@@ -15,6 +15,7 @@ import java.util.HashSet;
  */
 public class Pic {
 
+    private String owner = "";
     private ByteBuffer bImage = null;
     private int length;
     private String type;
@@ -61,7 +62,16 @@ public class Pic {
         byte image[] = Bytes.getArray(bImage);
         return image;
     }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
     
+      
     
 
 }

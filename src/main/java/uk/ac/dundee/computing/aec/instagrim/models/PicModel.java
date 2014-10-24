@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import javax.imageio.ImageIO;
 import static org.imgscalr.Scalr.*;
@@ -128,6 +129,10 @@ public class PicModel {
             ResultSet rs = session.execute(bsInsertedTime.bind(picid));
             Date dateAdded = new Date();
             String owner = "";
+            
+            TagModel tm = new TagModel();
+            tm.setCluster(cluster);
+
             if (rs.isExhausted()) 
             {
                 session.close();
@@ -143,9 +148,16 @@ public class PicModel {
             }
             if (owner.equals(user))
             {
+                HashSet<String> tags = tm.getTags(picid);
+                Iterator it;
+                it = tags.iterator();
                 session.execute(bsDeletePic.bind(picid));
                 session.execute(bsDeletePicUserPicList.bind(user, dateAdded));
                 session.execute(bsDeletePicComments.bind(picid));
+                while (it.hasNext()) {
+                    String tag = (String) it.next();
+                    deleteTagFromPic(tag, picid);
+                }
                 session.close();
                 return "success";
             }
@@ -335,7 +347,7 @@ public class PicModel {
         }
         else
         {
-            tagid = tm.addNewTag(tag);
+            tagid = Convertors.getTimeUUID();
         }
         PreparedStatement psAddTagToPic = session.prepare("insert into tagpic (tagid, picid) values (?,?)");
         PreparedStatement psIncreaseCount = session.prepare("UPDATE tags SET count=count+1 WHERE tagid = ? and tag = ?");

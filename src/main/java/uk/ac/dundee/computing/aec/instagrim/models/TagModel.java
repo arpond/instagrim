@@ -114,4 +114,27 @@ public class TagModel {
         session.close();
         return tagID;
     }
+    
+    public LinkedList<String> getTopTags(int limit)
+    {
+        LinkedList<String> topTags = new LinkedList<String>();
+        Session session = cluster.connect("instagrim");
+        PreparedStatement psTopTags = session.prepare("Select * from tags ORDER BY count LIMIT ?");
+        BoundStatement bsTopTags = new BoundStatement(psTopTags);
+        ResultSet rs = null;
+        rs = session.execute(bsTopTags.bind(limit));
+        if (rs.isExhausted())
+        {
+            System.out.println("No Tags");
+            return topTags;
+        }
+        for(Row row : rs)
+        {
+            String tag = row.getString("tag");
+            topTags.add(tag);
+        }
+        
+        session.close();
+        return topTags;
+    }
 }

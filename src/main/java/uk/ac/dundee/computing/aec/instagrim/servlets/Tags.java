@@ -75,6 +75,5 @@ public class Tags  extends HttpServlet {
         request.setAttribute("Pics", pics);
         RequestDispatcher rd = request.getRequestDispatcher("/tagPics.jsp");
         rd.forward(request, response);
-    }
-    
+    }    
 }

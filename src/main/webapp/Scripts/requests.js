@@ -84,6 +84,7 @@ function updateTags(picID, owner)
         {   
             $("h3." + picID).text("Tags: " + tags);
             $("div#tag" + picID).hide();
+            $(id).val(tags);
         }
         alert(data.message);
     },
