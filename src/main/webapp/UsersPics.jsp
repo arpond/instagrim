@@ -31,11 +31,23 @@
         </nav>
  
         <article>
+        <%  
+            boolean match = (boolean) request.getAttribute("Match");
+            String owner = (String) request.getAttribute("Owner");
+            if (match)
+            {
+        %>
             <h1>Your Pics</h1>
         <%
+            }
+            else
+            {
+        %>
+        <h1><%=owner%> Pics</h1>
+        <%
+            }
             java.util.LinkedList<Pic> lsPics = (java.util.LinkedList<Pic>) request.getAttribute("Pics");
-            String owner = (String) request.getAttribute("Owner");
-            boolean match = (boolean) request.getAttribute("Match");
+            
             if (lsPics == null) {
         %>
         <p>No Pictures found</p>
@@ -72,13 +84,18 @@
                 if (match)
                 {%>
             <button type="button" onclick="deleteImage('<%=p.getSUUID()%>', '<%=owner%>');">Delete</button>
-                <%}%>
                 <p><h3 class="<%=p.getSUUID()%>">Tags: <%=tags%></h3><button type="button" onclick="showEditTags('<%=p.getSUUID()%>');" id="<%=p.getSUUID()%>">Edit Tags</button>
             </p>
             <div class="hide" id="tag<%=p.getSUUID()%>">
                 <input type="text" name="tagUpdate" class="<%=p.getSUUID()%>" value="<%=tags%>">
                 <button type="button" onclick="updateTags('<%=p.getSUUID()%>', '<%=owner%>');">Update Tags</button>
             </div>
+                <%}
+                else
+                {%>
+                <p><h3 class="<%=p.getSUUID()%>">Tags: <%=tags%></h3>
+                </p>
+                <%}%>
         </div>
         <%
             }
