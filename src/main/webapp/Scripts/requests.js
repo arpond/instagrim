@@ -33,7 +33,7 @@ function deleteImage(picid, owner)
     success: function (data, textStatus, xhr) {
         if (data.success)
         {   
-            $("#" + picid).hide();
+            $("div." + picid).hide();
         }
         alert(data.message);
     },
@@ -58,6 +58,42 @@ function updateProfile(owner)
     });
 }
 
+function hideEditTags()
+{
+    $("div.hide").hide();
+    //$("button.hide").hide();
+}
 
+function showEditTags(picID)
+{
+    //alert("show");
+    $("div#tag" + picID).show();
+    //$("button#" + picID).hide();
+}
+
+function updateTags(picID, owner)
+{
+    var id = "input." + picID;
+    var tags = $(id).val();
+    $.ajax({
+       type: "put",
+       url: "/Instagrim/Image/" + owner + "/" + picID + "/" + tags,
+       async: false,
+    success: function (data, textStatus, xhr) {
+        if (data.success)
+        {   
+            $("h3." + picID).text("Tags: " + tags);
+            $("div#tag" + picID).hide();
+        }
+        alert(data.message);
+    },
+    error: function (xhr, textStatus, errorThrown) {
+                     alert("There was an error processing your request");
+                     console.log('Error in Operation');
+                 }
+    });
+}
+
+$( document ).ready( hideEditTags);
 
 

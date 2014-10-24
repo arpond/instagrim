@@ -45,15 +45,40 @@
             iterator = lsPics.iterator();
             while (iterator.hasNext()) {
                 Pic p = (Pic) iterator.next();
+                HashSet<String> tagSet = p.getTags();
+                String tags ="";
+                if (tagSet.isEmpty())
+                {
+                    tags = "No Tags";
+                }
+                else
+                {
+                    Iterator<String> it;
+                    it = tagSet.iterator();
+                    while (it.hasNext())
+                    {
+                        tags += (String) it.next();
+                        if (it.hasNext())
+                        {
+                            tags += ",";
+                        }
+                    }
+                }
 
         %>
-        <div id="<%=p.getSUUID()%>">
+        <div class="<%=p.getSUUID()%>">
             <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
         <%
                 if (match)
                 {%>
             <button type="button" onclick="deleteImage('<%=p.getSUUID()%>', '<%=owner%>');">Delete</button>
                 <%}%>
+                <p><h3 class="<%=p.getSUUID()%>">Tags: <%=tags%></h3><button type="button" onclick="showEditTags('<%=p.getSUUID()%>');" id="<%=p.getSUUID()%>">Edit Tags</button>
+            </p>
+            <div class="hide" id="tag<%=p.getSUUID()%>">
+                <input type="text" name="tagUpdate" class="<%=p.getSUUID()%>" value="<%=tags%>">
+                <button type="button" onclick="updateTags('<%=p.getSUUID()%>', '<%=owner%>');">Update Tags</button>
+            </div>
         </div>
         <%
             }
