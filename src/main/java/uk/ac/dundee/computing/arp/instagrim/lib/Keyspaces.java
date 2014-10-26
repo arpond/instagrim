@@ -14,8 +14,8 @@ public final class Keyspaces {
     public static void SetUpKeySpaces(Cluster c) {
         try {
             //Add some keyspaces here
-            String createkeyspace = "create keyspace if not exists instagrim  WITH replication = {'class':'SimpleStrategy', 'replication_factor':1}";
-            String CreatePicTable = "CREATE TABLE if not exists instagrim.Pics ("
+            String createkeyspace = "create keyspace if not exists instagrim-arp  WITH replication = {'class':'SimpleStrategy', 'replication_factor':1}";
+            String CreatePicTable = "CREATE TABLE if not exists instagrim-arp.Pics ("
                     + " user varchar,"
                     + " picid uuid, "
                     + " interaction_time timestamp,"
@@ -34,18 +34,18 @@ public final class Keyspaces {
                     + " name  varchar,"
                     + " PRIMARY KEY (picid)"
                     + ")";
-            String Createuserpiclist = "CREATE TABLE if not exists instagrim.userpiclist (\n"
+            String Createuserpiclist = "CREATE TABLE if not exists instagrim-arp.userpiclist (\n"
                     + "picid uuid,\n"
                     + "user varchar,\n"
                     + "pic_added timestamp,\n"
                     + "PRIMARY KEY (user,pic_added)\n" 
                     + ") WITH CLUSTERING ORDER BY (pic_added desc);";
-            String CreateAddressType = "CREATE TYPE if not exists instagrim.address (\n"
+            String CreateAddressType = "CREATE TYPE if not exists instagrim-arp.address (\n"
                     + "      street text,\n"
                     + "      city text,\n"
                     + "      zip int\n"
                     + "  );";
-            String CreateUserProfile = "CREATE TABLE if not exists instagrim.userprofiles (\n"
+            String CreateUserProfile = "CREATE TABLE if not exists instagrim-arp.userprofiles (\n"
                     + "      login text PRIMARY KEY,\n"
                     + "      password text,\n"
                     + "      salt text,\n"
@@ -58,20 +58,20 @@ public final class Keyspaces {
                     + "      joined timestamp,\n"
                     + "      addresses  map<text, frozen <address>>\n"
                     + "  );";
-            String CreateComments = "CREATE TABLE if not exists instagrim.comments(\n"
+            String CreateComments = "CREATE TABLE if not exists instagrim-arp.comments(\n"
                     + "      picid uuid,\n"
                     + "      author varchar,\n"
                     + "      comment text,\n"
                     + "      writtenOn timestamp,\n"
                     + "      PRIMARY KEY (picid, writtenOn)\n"
                     + ") WITH CLUSTERING ORDER BY (writtenOn desc);";
-            String CreateTags = "CREATE TABLE if not exists instagrim.tags(\n"
+            String CreateTags = "CREATE TABLE if not exists instagrim-arp.tags(\n"
                     + "      tagid uuid,\n"
                     + "      tag varchar,\n"
                     + "      count counter,\n"
                     + "      PRIMARY KEY (tagid,tag)\n"
                     + ");";
-            String CreateTagsToPic = "CREATE TABLE if not exists instagrim.tagpic(\n"
+            String CreateTagsToPic = "CREATE TABLE if not exists instagrim-arp.tagpic(\n"
                     + "      tagid uuid,\n"
                     + "      picid uuid,\n"
                     + "      PRIMARY KEY (picid, tagid)\n"
@@ -90,9 +90,9 @@ public final class Keyspaces {
                         statement);
                 ResultSet rs = session
                         .execute(boundStatement);
-                System.out.println("created instagrim ");
+                System.out.println("created instagrim-arp ");
             } catch (Exception et) {
-                System.out.println("Can't create instagrim " + et);
+                System.out.println("Can't create instagrim-arp " + et);
             }
 
             //now add some column families 
