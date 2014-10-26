@@ -52,7 +52,7 @@ public class Tags  extends HttpServlet {
             tag = args[2];
         } 
         catch (ArrayIndexOutOfBoundsException oobex) {
-            Error.error("ArrayOutOfBounds", request, response);
+            Error.error("There was an error proccessing your request.", request, response);
             return;
         }
         

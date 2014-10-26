@@ -6,15 +6,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
-import javax.persistence.Convert;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -25,15 +20,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.fileupload.util.Streams;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.lib.Error;
 import uk.ac.dundee.computing.aec.instagrim.lib.UserPermission;
-import uk.ac.dundee.computing.aec.instagrim.models.UserModel;
 import uk.ac.dundee.computing.aec.instagrim.models.PicModel;
 import uk.ac.dundee.computing.aec.instagrim.models.CommentModel;
 import uk.ac.dundee.computing.aec.instagrim.models.TagModel;
@@ -88,6 +78,7 @@ public class Image extends HttpServlet {
         PostMap.put("upload", 1);
     }
 
+    @Override
     public void init(ServletConfig config) throws ServletException {
         // TODO Auto-generated method stub
         cluster = CassandraHosts.getCluster();
@@ -113,7 +104,7 @@ public class Image extends HttpServlet {
                 command = (Integer) CommandsMap.get(args[1]);
             }
         } catch (Exception et) {
-            Error.error("Bad Operator",  request, response);
+            Error.error("There was an error proccessing your request.",  request, response);
             return;
         }
         System.out.println("Command: " + command);
@@ -147,7 +138,7 @@ public class Image extends HttpServlet {
                 }
                 else
                 {
-                    Error.error("Bad Operator",  request, response);
+                    Error.error("There was an error proccessing your request.",  request, response);
                 }
                 break;
             case 6:
@@ -157,7 +148,7 @@ public class Image extends HttpServlet {
                 }
                 else
                 {
-                    Error.error("Bad Operator",  request, response);
+                    Error.error("There was an error proccessing your request.",  request, response);
                 }
                 break;
             case 7:
@@ -167,16 +158,16 @@ public class Image extends HttpServlet {
                 }
                 else
                 {
-                    Error.error("Bad Operator",  request, response);
+                    Error.error("There was an error proccessing your request.",  request, response);
                 }
                 break;
             default:
-                Error.error("Bad Operator",  request, response);
+                Error.error("There was an error proccessing your request.",  request, response);
             }
         }
         catch (ArrayIndexOutOfBoundsException oobex)
         {
-            Error.error("ArrayOutOfBounds",  request, response);
+            Error.error("There was an error proccessing your request.",  request, response);
         }  
     }
     
@@ -286,14 +277,7 @@ public class Image extends HttpServlet {
         String success = tm.picDelete(owner, java.util.UUID.fromString(picid));  
         if (!success.equals("success"))
         {
-            //Error.error("Image Not Found" + success, request, response);
             return "Image Not Found";
-        }
-        else
-        {
-            //request.setAttribute("message", "Image Successfully Deleted");
-            //RequestDispatcher view = request.getRequestDispatcher("/message.jsp");
-            //view.forward(request, response);
         }
         return "success";
     }
@@ -354,13 +338,13 @@ public class Image extends HttpServlet {
         tm.setCluster(cluster);
         java.util.UUID picUUID = java.util.UUID.fromString(picid);
         HashSet<String> oldTags = tm.getTags(picUUID);
-        HashSet<String> newTags = new HashSet<String>();
+        HashSet<String> newTags = new HashSet<>();
         for (String tag : tags)
         {
             newTags.add(tag);
         }
-        HashSet<String> toDelete = new HashSet<String>(oldTags);
-        HashSet<String> toAdd = new HashSet<String>(newTags)    ;
+        HashSet<String> toDelete = new HashSet<>(oldTags);
+        HashSet<String> toAdd = new HashSet<>(newTags)    ;
         toDelete.removeAll(newTags);
         toAdd.removeAll(oldTags);
         
@@ -460,7 +444,7 @@ public class Image extends HttpServlet {
         try {
             command = (Integer) PostMap.get(action);
         } catch (Exception et) {
-            Error.error("Bad Post Operator",  request, response);
+            Error.error("There was an error proccessing your request.",  request, response);
             return;
         }
         
@@ -470,11 +454,8 @@ public class Image extends HttpServlet {
                 UploadImage (request,response);
                 break;
             default:
-                Error.error("Bad Post Operator",  request, response);
+                Error.error("There was an error proccessing your request.",  request, response);
         }
-        
-        
-
     }
     
     @Override

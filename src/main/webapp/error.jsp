@@ -43,6 +43,7 @@
             </nav>        
         </header>
         <article>
+            <h2>Error!</h2>
             <p>
                 <br/>
                 <%

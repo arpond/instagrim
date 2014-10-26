@@ -112,9 +112,7 @@
                     </ul>
                 </div>
                 <br/>
-            </article>
-            
-        <%
+            <%
             if (lg != null)
             {
                 String user = lg.getUsername();
@@ -127,7 +125,8 @@
             {%>
                 <a href="/Instagrim/Images/<%=owner%>">View <%=owner%>'s gallery</a>
           <%}
-        %>
+            %>
+            </article>
         </header>
     </body>
 </html>

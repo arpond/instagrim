@@ -73,7 +73,7 @@ public class Profile extends HttpServlet {
             for (int i = 0; i < args.length; i++) {
                 debug += ", " + args[i];
             }
-            Error.error("Bad Operator " + debug, request, response);
+            Error.error("There was an error proccessing your request. " + debug, request, response);
             return;
         }
 
@@ -89,10 +89,10 @@ public class Profile extends HttpServlet {
                     displayProfilePic(args[3], request, response);
                     break;
                 default:
-                    Error.error("Bad Operator - default", request, response);
+                    Error.error("There was an error proccessing your request.", request, response);
             }
         } catch (ArrayIndexOutOfBoundsException oobex) {
-            Error.error("ArrayOutOfBounds", request, response);
+            Error.error("There was an error proccessing your request.", request, response);
         }
     }
 
@@ -283,7 +283,7 @@ public class Profile extends HttpServlet {
         try {
             command = (Integer) PostMap.get(action);
         } catch (Exception et) {
-            Error.error("Bad Operator - Post - Profile - " + action, request, response);
+            Error.error("There was an error proccessing your request.", request, response);
             return;
         }
 
@@ -295,25 +295,10 @@ public class Profile extends HttpServlet {
                 uploadProfilePic(request, response);
                 break;
             default:
-                Error.error("Bad Operator - default", request, response);
+                Error.error("There was an error proccessing your request.", request, response);
         }
 
     }
-
-//    private boolean userMatch(String owner, HttpServletRequest request) {
-//        HttpSession session = request.getSession();
-//
-//        LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
-//        if (lg == null || !lg.getlogedin()) {
-//            return false;
-//        }
-//
-//        String current = lg.getUsername();
-//        if (!current.equals(owner)) {
-//            return false;
-//        }
-//        return true;
-//    }
     
     @Override
     public void destroy()

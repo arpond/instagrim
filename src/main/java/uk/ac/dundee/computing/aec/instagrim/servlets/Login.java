@@ -24,10 +24,6 @@ import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 
 
 /**
- * TODO - Make empty username more graceful
- */
-
-/**
  *
  * @author Administrator
  */
@@ -65,7 +61,7 @@ public class Login extends HttpServlet {
         }
         else if (password.equals(""))
         {
-            Error.error("You must enter a passweord", request, response);
+            Error.error("You must enter a password", request, response);
             return;
         }
         
@@ -86,7 +82,7 @@ public class Login extends HttpServlet {
 	    rd.forward(request,response);
             
         }else{
-            response.sendRedirect("/Instagrim/login.jsp");
+            Error.error("Your username or password was invalid please try again.", request, response);
         }
         
     }
