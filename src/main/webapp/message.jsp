@@ -10,8 +10,8 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <meta http-equiv="refresh" content="5; url=http://localhost:8080/Instagrim/" />
-        <link rel="stylesheet" type="text/css" href="/Instagrim/Styles.css" />
+        <meta http-equiv="refresh" content="5; url=http://localhost:8080/Instagrim-arp/" />
+        <link rel="stylesheet" type="text/css" href="/Instagrim-arp/Styles.css" />
         <title>Instagrim</title>
     </head>
     <body>
@@ -26,18 +26,18 @@
                         String UserName = lg.getUsername();
                         if (lg.getlogedin()) {
                         %>
-                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                    <li><a href="/Instagrim/upload.jsp">Upload</a></li>
-                    <li><a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a></li>
-                    <li><a href="/Instagrim/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
-                    <li><a href="/Instagrim/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
-                    <li><a href="/Instagrim/Logout">Logout</a></li>
+                    <li><a href="/Instagrim-arp/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim-arp/upload.jsp">Upload</a></li>
+                    <li><a href="/Instagrim-arp/Images/<%=lg.getUsername()%>">Your Images</a></li>
+                    <li><a href="/Instagrim-arp/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
+                    <li><a href="/Instagrim-arp/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
+                    <li><a href="/Instagrim-arp/Logout">Logout</a></li>
                     <%  }
                     }else{
                     %>
-                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                    <li><a href="/Instagrim/register.jsp">Register</a></li>
-                    <li><a href="/Instagrim/login.jsp">Login</a></li>
+                    <li><a href="/Instagrim-arp/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim-arp/register.jsp">Register</a></li>
+                    <li><a href="/Instagrim-arp/login.jsp">Login</a></li>
                     <%
                     }%>
                 </ul>
@@ -51,11 +51,11 @@
               out.print(message);
             %>
             </p>
-            <p>You will be redirected to the index in 5 seconds... or return to the <a href="/Instagrim/">index</a></p>
+            <p>You will be redirected to the index in 5 seconds... or return to the <a href="/Instagrim-arp/">index</a></p>
         </article>
         <footer>
             <ul>
-                <li class="footer"><a href="/Instagrim">Home</a></li>
+                <li class="footer"><a href="/Instagrim-arp">Home</a></li>
             </ul>
         </footer>
     </body>

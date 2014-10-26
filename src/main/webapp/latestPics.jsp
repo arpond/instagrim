@@ -13,7 +13,7 @@
 <html>
     <head>
         <title>Instagrim</title>
-        <link rel="stylesheet" type="text/css" href="/Instagrim/Styles.css" />
+        <link rel="stylesheet" type="text/css" href="/Instagrim-arp/Styles.css" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body>
@@ -28,18 +28,18 @@
                         String UserName = lg.getUsername();
                         if (lg.getlogedin()) {
                         %>
-                    <li><a class="active" href="/Instagrim/Images/">Latest Images</a></li>
-                    <li><a href="/Instagrim/upload.jsp">Upload</a></li>
-                    <li><a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a></li>
-                    <li><a href="/Instagrim/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
-                    <li><a href="/Instagrim/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
-                    <li><a href="/Instagrim/Logout">Logout</a></li>
+                    <li><a class="active" href="/Instagrim-arp/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim-arp/upload.jsp">Upload</a></li>
+                    <li><a href="/Instagrim-arp/Images/<%=lg.getUsername()%>">Your Images</a></li>
+                    <li><a href="/Instagrim-arp/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
+                    <li><a href="/Instagrim-arp/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
+                    <li><a href="/Instagrim-arp/Logout">Logout</a></li>
                     <%  }
                     }else{
                     %>
-                    <li><a class="active" href="/Instagrim/Images/">Latest Images</a></li>
-                    <li><a href="/Instagrim/register.jsp">Register</a></li>
-                    <li><a href="/Instagrim/login.jsp">Login</a></li>
+                    <li><a class="active" href="/Instagrim-arp/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim-arp/register.jsp">Register</a></li>
+                    <li><a href="/Instagrim-arp/login.jsp">Login</a></li>
                     <%
                     }%>
                 </ul>
@@ -71,7 +71,7 @@
                         while (it.hasNext())
                         {
                             String next = (String) it.next();
-                            tags += "<a href=\"\\Instagrim\\Tag\\" + next + "\">" + next + "</a>";
+                            tags += "<a href=\"\\Instagrim-arp\\Tag\\" + next + "\">" + next + "</a>";
                             if (it.hasNext())
                             {
                                 tags += ",";
@@ -83,13 +83,13 @@
             <div id="pic<%=p.getSUUID()%>" class="pic">
                 <div class="thumb">
                     <span class="shadow">
-                        <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a>
+                        <a href="/Instagrim-arp/Image/<%=p.getSUUID()%>" ><img src="/Instagrim-arp/Thumb/<%=p.getSUUID()%>"></a>
                     </span>
                 </div>
                 <div class="details">
                     <div class="tags"><span class="<%=p.getSUUID()%>">Tags: <%=tags%></span><span class="right"></span></div>
-                    <div class="comment"><a href="/Instagrim/Image/Comments/<%=p.getSUUID()%>">Comments</a></div>
-                    <div class="owner">Owner: <a href="/Instagrim/Profile/View/<%=p.getOwner()%>" ><%=p.getOwner()%></a></div>
+                    <div class="comment"><a href="/Instagrim-arp/Image/Comments/<%=p.getSUUID()%>">Comments</a></div>
+                    <div class="owner">Owner: <a href="/Instagrim-arp/Profile/View/<%=p.getOwner()%>" ><%=p.getOwner()%></a></div>
                 </div>
             </div>
                 <%} 

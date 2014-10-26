@@ -27,7 +27,7 @@ function deleteImage(picid, owner)
 {
     $.ajax({
     type: "delete",
-    url: "/Instagrim/Image/" + owner  +"/" + picid,
+    url: "/Instagrim-arp/Image/" + owner  +"/" + picid,
     dataType: "json",
     async: false,
     success: function (data, textStatus, xhr) {
@@ -51,7 +51,7 @@ function updateProfile(owner)
     alert(data);
     $.ajax({
         type: "post",
-        url: "/Instagrim/Profile/" + owner,
+        url: "/Instagrim-arp/Profile/" + owner,
         data: data,
         dataType: "json",
         async: false
@@ -77,7 +77,7 @@ function updateTags(picID, owner)
     var tags = $(id).val();
     $.ajax({
        type: "put",
-       url: "/Instagrim/Image/" + owner + "/" + picID + "/" + tags,
+       url: "/Instagrim-arp/Image/" + owner + "/" + picID + "/" + tags,
        async: false,
     success: function (data, textStatus, xhr) {
         if (data.success)

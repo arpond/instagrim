@@ -79,7 +79,7 @@ public class UserModel {
             return "Can't encode your password";
         }
               
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         PreparedStatement psUserCheck = session.prepare("select login from userprofiles where login =?");
         PreparedStatement psInsertUser = session.prepare("insert into userprofiles (login,password,salt,email,joined) Values(?,?,?,?,?)");
        
@@ -142,7 +142,7 @@ public class UserModel {
         ApSimpleSHA256 sha256handler = new ApSimpleSHA256();
         String encodedPassword = null;
         
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         PreparedStatement ps = session.prepare("select password, salt from userprofiles where login =?");
         ResultSet rs = null;
         BoundStatement boundStatement = new BoundStatement(ps);
@@ -190,7 +190,7 @@ public class UserModel {
     public UserDetails getUserDetails(String username)
     {
         System.out.println("Getting user details..");
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
        
         System.out.println(username);
         PreparedStatement ps = session.prepare("select * from userprofiles where login =?");
@@ -252,14 +252,14 @@ public class UserModel {
      */
     public void updateUserDetails(String username, String firstname, String lastname, String emails, String street, String city, int zip)
     {
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
        
         System.out.println(username);
         System.out.println(firstname);
         System.out.println(lastname);
         System.out.println(emails);
         
-        UserType addressUDT = session.getCluster().getMetadata().getKeyspace("instagrim").getUserType("address");
+        UserType addressUDT = session.getCluster().getMetadata().getKeyspace("instagrimarp").getUserType("address");
         UDTValue address = addressUDT.newValue().setString("street", street).setString("city", city).setInt("zip", zip);
         Map<String, UDTValue> addresses = new HashMap<String, UDTValue>();
         addresses.put("Home", address);
@@ -290,7 +290,7 @@ public class UserModel {
         System.out.println("wrapping");
         ByteBuffer buffer = ByteBuffer.wrap(b);
         int length = b.length;
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
 
         PreparedStatement psInsertProfilePic = session.prepare("Update userprofiles set profilepic = ?, profilepiclength = ?, profilepictype = ? where login = ?");
         BoundStatement bsInsertProfilePic = new BoundStatement(psInsertProfilePic);
@@ -308,7 +308,7 @@ public class UserModel {
     {
         System.out.println("Getting Profile Pic..");
         System.out.println("user: " + user);
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         ByteBuffer bImage = null;
         int length = 0;
         String type = "";

@@ -41,7 +41,7 @@ public class CommentModel {
      */
     public void insertComment(String user, String pictureID, String comment)
     {
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         
         PreparedStatement psInsertComment = session.prepare("insert into comments ( picid, author, comment, writtenOn) values(?,?,?,?)");
         BoundStatement bsInsertComment = new BoundStatement(psInsertComment);
@@ -61,7 +61,7 @@ public class CommentModel {
      */
     public ArrayList<Comment> getComments(java.util.UUID picid)
     {
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         
         PreparedStatement psComment = session.prepare("SELECT * FROM comments WHERE picid = ?");
         BoundStatement bsComment = new BoundStatement (psComment);

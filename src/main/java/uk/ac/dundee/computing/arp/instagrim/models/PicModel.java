@@ -90,7 +90,7 @@ public class PicModel {
 //            ByteBuffer negativebuf = ByteBuffer.wrap(negativedb);
 //            int negativelength = negativedb.length;
             
-            Session session = cluster.connect("instagrim");
+            Session session = cluster.connect("instagrimarp");
 
             PreparedStatement psInsertPic = session.prepare("insert into pics ( picid, image,thumb,processed, user, interaction_time,imagelength,thumblength,processedlength,type,name) values(?,?,?,?,?,?,?,?,?,?,?)");
             PreparedStatement psInsertPicToUser = session.prepare("insert into userpiclist ( picid, user, pic_added) values(?,?,?)");
@@ -118,7 +118,7 @@ public class PicModel {
     public String picDelete(String user, java.util.UUID picid)
     {
         try {
-            Session session = cluster.connect("instagrim");
+            Session session = cluster.connect("instagrimarp");
 
             //PreparedStatement psDeletePic = session.prepare("insert into pics ( picid, image,thumb,processed, user, interaction_time,imagelength,thumblength,processedlength,type,name) values(?,?,?,?,?,?,?,?,?,?,?)");
             PreparedStatement psInsertedTime = session.prepare("SELECT interaction_time, user FROM pics WHERE picid = ?");
@@ -334,7 +334,7 @@ public class PicModel {
      */
     public java.util.LinkedList<Pic> getPicsForUser(String User) {
         java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         PreparedStatement ps = session.prepare("select picid from userpiclist where user =?");
         ResultSet rs = null;
         BoundStatement boundStatement = new BoundStatement(ps);
@@ -367,7 +367,7 @@ public class PicModel {
     public void addTagToPic(String tag, java.util.UUID picid)
     {
         System.out.println("Adding " + tag + " to pic");
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         TagModel tm = new TagModel();
         tm.setCluster(cluster);
         java.util.UUID tagid = null;
@@ -396,7 +396,7 @@ public class PicModel {
     public void deleteTagFromPic(String tag, java.util.UUID picid)
     {
         System.out.println("Deleting " + tag + " from pic");
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         TagModel tm = new TagModel();
         tm.setCluster(cluster);
         java.util.UUID tagid = tm.getTagID(tag);
@@ -418,7 +418,7 @@ public class PicModel {
     {
         java.util.LinkedList<Pic> pics = new java.util.LinkedList<>();
         //java.util.LinkedList<java.util.UUID> picIDs = new java.util.LinkedList<>();
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         TagModel tm = new TagModel();
         tm.setCluster(cluster);
         
@@ -449,7 +449,7 @@ public class PicModel {
     public LinkedList<Pic> getLatestPics()
     {
         LinkedList<Pic> latest = new LinkedList<>();
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         PreparedStatement psLatest = session.prepare("select picid, user from userpiclist Limit 50");
         BoundStatement bsLatest = new BoundStatement(psLatest);
         ResultSet rs = null;
@@ -484,7 +484,7 @@ public class PicModel {
      * @return Pic representing the picture
      */
     public Pic getPic(int image_type, java.util.UUID picid) {
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         System.out.println("Getting picture..");
         ByteBuffer bImage = null;
         String type = null;
@@ -585,7 +585,7 @@ public class PicModel {
      */
     private void insertFiltered(int image_type, byte[] bArray,  java.util.UUID picid)
     {
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         
         int length = bArray.length;
         ByteBuffer bImage = ByteBuffer.wrap(bArray);

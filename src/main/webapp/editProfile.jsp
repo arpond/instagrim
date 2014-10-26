@@ -16,7 +16,7 @@
 <html>
     <head>
         <title>Instagrim</title>
-        <link rel="stylesheet" type="text/css" href="/Instagrim/Styles.css" />
+        <link rel="stylesheet" type="text/css" href="/Instagrim-arp/Styles.css" />
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="${pageContext.request.contextPath}/Scripts/requests.js" type="text/javascript"></script>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -33,18 +33,18 @@
                         String UserName = lg.getUsername();
                         if (lg.getlogedin()) {
                         %>
-                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                    <li><a href="/Instagrim/upload.jsp">Upload</a></li>
-                    <li><a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a></li>
-                    <li><a href="/Instagrim/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
-                    <li><a class ="active" href="/Instagrim/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
-                    <li><a href="/Instagrim/Logout">Logout</a></li>
+                    <li><a href="/Instagrim-arp/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim-arp/upload.jsp">Upload</a></li>
+                    <li><a href="/Instagrim-arp/Images/<%=lg.getUsername()%>">Your Images</a></li>
+                    <li><a href="/Instagrim-arp/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
+                    <li><a class ="active" href="/Instagrim-arp/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
+                    <li><a href="/Instagrim-arp/Logout">Logout</a></li>
                     <%  }
                     }else{
                     %>
-                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                    <li><a href="/Instagrim/register.jsp">Register</a></li>
-                    <li><a href="/Instagrim/login.jsp">Login</a></li>
+                    <li><a href="/Instagrim-arp/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim-arp/register.jsp">Register</a></li>
+                    <li><a href="/Instagrim-arp/login.jsp">Login</a></li>
                     <%
                     }%>
                 </ul>
@@ -98,7 +98,7 @@
             <div id="profile">
                 <div id="updateAvatar">
                     <h3>Upload Avatar</h3>
-                    <form method="POST" enctype="multipart/form-data" action="/Instagrim/Profile/View/<%=owner%>" id="upload">
+                    <form method="POST" enctype="multipart/form-data" action="/Instagrim-arp/Profile/View/<%=owner%>" id="upload">
                         <ul>
                             <li><label>Upload Profile Picture:</label><input type="file" name="upfile"></li>
                             <li><input type="submit" value="upload" name="action" id="uploadButton" class="button"> to upload the file!</li>
@@ -108,7 +108,7 @@
                 </div>
                 <div id="updateProfile">
                     <h3>Update Profile</h3>
-                    <form id="updateForm" method="POST"  action="/Instagrim/Profile/View/<%=owner%>" >
+                    <form id="updateForm" method="POST"  action="/Instagrim-arp/Profile/View/<%=owner%>" >
                         <ul>
                             <li><label class="input">First Name </label><input type="text" name="firstname" value="<%=firstname%>"></li>
                             <li><label class="input">Last Name </label><input type="text" name="lastname" value="<%=lastname%>"></li>

@@ -69,7 +69,9 @@ public class Login extends HttpServlet {
         boolean isValid=us.IsValidUser(username, password);
         HttpSession session=request.getSession();
         System.out.println("Session in servlet "+session);
+        System.out.println("Checking if valid");
         if (isValid){
+            System.out.println("Is Valid");
             LoggedIn lg= new LoggedIn();
             lg.setLogedin();
             lg.setUsername(username);

@@ -14,7 +14,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Instagrim</title>
-        <link rel="stylesheet" type="text/css" href="/Instagrim/Styles.css" />
+        <link rel="stylesheet" type="text/css" href="/Instagrim-arp/Styles.css" />
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="${pageContext.request.contextPath}/Scripts/requests.js" type="text/javascript"></script>
     </head>
@@ -30,18 +30,18 @@
                         String UserName = lg.getUsername();
                         if (lg.getlogedin()) {
                         %>
-                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                    <li><a href="/Instagrim/upload.jsp">Upload</a></li>
-                    <li><a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a></li>
-                    <li><a href="/Instagrim/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
-                    <li><a href="/Instagrim/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
-                    <li><a href="/Instagrim/Logout">Logout</a></li>
+                    <li><a href="/Instagrim-arp/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim-arp/upload.jsp">Upload</a></li>
+                    <li><a href="/Instagrim-arp/Images/<%=lg.getUsername()%>">Your Images</a></li>
+                    <li><a href="/Instagrim-arp/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
+                    <li><a href="/Instagrim-arp/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
+                    <li><a href="/Instagrim-arp/Logout">Logout</a></li>
                     <%  }
                     }else{
                     %>
-                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                    <li><a href="/Instagrim/register.jsp">Register</a></li>
-                    <li><a href="/Instagrim/login.jsp">Login</a></li>
+                    <li><a href="/Instagrim-arp/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim-arp/register.jsp">Register</a></li>
+                    <li><a href="/Instagrim-arp/login.jsp">Login</a></li>
                     <%
                     }%>
                 </ul>
@@ -89,7 +89,7 @@
 
             %>
             <div class="<%=p.getSUUID()%>">
-                <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
+                <a href="/Instagrim-arp/Image/<%=p.getSUUID()%>" ><img src="/Instagrim-arp/Thumb/<%=p.getSUUID()%>"></a><br/>
                 <p><h3 class="<%=p.getSUUID()%>">Tags: <%=tags%></h3>
                 </p>
             </div>

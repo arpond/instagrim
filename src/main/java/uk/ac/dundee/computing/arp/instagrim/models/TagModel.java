@@ -38,7 +38,7 @@ public class TagModel {
      */
     public HashSet<String> getTags(java.util.UUID picid)
     {
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         HashSet<String> tags = new HashSet<>();
         PreparedStatement psTagIDs = session.prepare("select tagid from tagpic where picid = ?");        
         BoundStatement bsTagIDs = new BoundStatement(psTagIDs); 
@@ -76,7 +76,7 @@ public class TagModel {
      */
     public boolean tagExists(String tag)
     {
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         PreparedStatement psTag = session.prepare("select * from tags where tag = ? ALLOW FILTERING");
         BoundStatement bsTag = new BoundStatement(psTag);
         ResultSet rs = session.execute(bsTag.bind(tag));
@@ -98,7 +98,7 @@ public class TagModel {
     public java.util.UUID getTagID(String tag)
     {
         java.util.UUID tagid = null;
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         PreparedStatement psTagID = session.prepare("select tagid from tags where tag = ? ALLOW FILTERING");
         BoundStatement bsTagID = new BoundStatement(psTagID);
         
@@ -127,7 +127,7 @@ public class TagModel {
     public java.util.UUID addNewTag(String tag)
     {
         System.out.println("Adding " + tag + " to tags");
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         Convertors convertor = new Convertors();
         java.util.UUID tagID = convertor.getTimeUUID();
         PreparedStatement psNewTag = session.prepare("insert into tags (tagid,tag) values(?,?) ");
@@ -145,7 +145,7 @@ public class TagModel {
     public LinkedList<String> getTopTags(int limit)
     {
         LinkedList<String> topTags = new LinkedList<>();
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimarp");
         PreparedStatement psTopTags = session.prepare("Select * from tags ORDER BY count LIMIT ?");
         BoundStatement bsTopTags = new BoundStatement(psTopTags);
         ResultSet rs = null;

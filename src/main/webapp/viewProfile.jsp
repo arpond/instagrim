@@ -16,7 +16,7 @@
 <html>
     <head>
         <title>Instagrim</title>
-        <link rel="stylesheet" type="text/css" href="/Instagrim/Styles.css" />
+        <link rel="stylesheet" type="text/css" href="/Instagrim-arp/Styles.css" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body>
@@ -31,18 +31,18 @@
                         String UserName = lg.getUsername();
                         if (lg.getlogedin()) {
                         %>
-                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                    <li><a href="/Instagrim/upload.jsp">Upload</a></li>
-                    <li><a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a></li>
-                    <li><a class="active" href="/Instagrim/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
-                    <li><a href="/Instagrim/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
-                    <li><a href="/Instagrim/Logout">Logout</a></li>
+                    <li><a href="/Instagrim-arp/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim-arp/upload.jsp">Upload</a></li>
+                    <li><a href="/Instagrim-arp/Images/<%=lg.getUsername()%>">Your Images</a></li>
+                    <li><a class="active" href="/Instagrim-arp/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
+                    <li><a href="/Instagrim-arp/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
+                    <li><a href="/Instagrim-arp/Logout">Logout</a></li>
                     <%  }
                     }else{
                     %>
-                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                    <li><a href="/Instagrim/register.jsp">Register</a></li>
-                    <li><a href="/Instagrim/login.jsp">Login</a></li>
+                    <li><a href="/Instagrim-arp/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim-arp/register.jsp">Register</a></li>
+                    <li><a href="/Instagrim-arp/login.jsp">Login</a></li>
                     <%
                     }%>
                 </ul>
@@ -84,7 +84,7 @@
             
             <article>
                 <h2>Profile: <%=owner%></h2>
-                <div id="avatar"><img src="/Instagrim/Profile/ProfilePic/<%=owner%>" width="128" height="128"></div>
+                <div id="avatar"><img src="/Instagrim-arp/Profile/ProfilePic/<%=owner%>" width="128" height="128"></div>
                 <div id="userDetails">
                     <ul>
                         <li>Name: <%=fullname%></li>
@@ -118,12 +118,12 @@
                 String user = lg.getUsername();
                 if (!user.equals(owner))
                 {%>
-                <a href="/Instagrim/Images/<%=owner%>">View <%=owner%>'s gallery</a>
+                <a href="/Instagrim-arp/Images/<%=owner%>">View <%=owner%>'s gallery</a>
               <%}
             }
             else
             {%>
-                <a href="/Instagrim/Images/<%=owner%>">View <%=owner%>'s gallery</a>
+                <a href="/Instagrim-arp/Images/<%=owner%>">View <%=owner%>'s gallery</a>
           <%}
             %>
             </article>

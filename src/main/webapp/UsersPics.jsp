@@ -12,7 +12,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Instagrim</title>
-        <link rel="stylesheet" type="text/css" href="/Instagrim/Styles.css" />
+        <link rel="stylesheet" type="text/css" href="/Instagrim-arp/Styles.css" />
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="${pageContext.request.contextPath}/Scripts/requests.js" type="text/javascript"></script>
     </head>
@@ -28,18 +28,18 @@
                         String UserName = lg.getUsername();
                         if (lg.getlogedin()) {
                         %>
-                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                    <li><a href="/Instagrim/upload.jsp">Upload</a></li>
-                    <li><a href="/Instagrim/Images/<%=lg.getUsername()%>" class="active">Your Images</a></li>
-                    <li><a href="/Instagrim/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
-                    <li><a href="/Instagrim/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
-                    <li><a href="/Instagrim/Logout">Logout</a></li>
+                    <li><a href="/Instagrim-arp/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim-arp/upload.jsp">Upload</a></li>
+                    <li><a href="/Instagrim-arp/Images/<%=lg.getUsername()%>" class="active">Your Images</a></li>
+                    <li><a href="/Instagrim-arp/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
+                    <li><a href="/Instagrim-arp/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
+                    <li><a href="/Instagrim-arp/Logout">Logout</a></li>
                     <%  }
                     }else{
                     %>
-                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                    <li><a href="/Instagrim/register.jsp">Register</a></li>
-                    <li><a href="/Instagrim/login.jsp">Login</a></li>
+                    <li><a href="/Instagrim-arp/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim-arp/register.jsp">Register</a></li>
+                    <li><a href="/Instagrim-arp/login.jsp">Login</a></li>
                     <%
                     }%>
                 </ul>
@@ -86,7 +86,7 @@
                     while (it.hasNext())
                     {
                         String next = (String) it.next();
-                        tags += "<a href=\"\\Instagrim\\Tag\\" + next + "\">" + next + "</a>";
+                        tags += "<a href=\"\\Instagrim-arp\\Tag\\" + next + "\">" + next + "</a>";
                         if (it.hasNext())
                         {
                             tags += ",";
@@ -98,7 +98,7 @@
         <div id="pic<%=p.getSUUID()%>" class="pic">
             <div class="thumb">
                 <span class="shadow">
-                    <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a>
+                    <a href="/Instagrim-arp/Image/<%=p.getSUUID()%>" ><img src="/Instagrim-arp/Thumb/<%=p.getSUUID()%>"></a>
                 </span>
             </div>
             <div class="details">
@@ -106,8 +106,8 @@
                 if (match)
                 {%>
                 <div class="tags"><span class="<%=p.getSUUID()%>">Tags: <%=tags%></span><span class="right"></span></div>
-                <div class="filters">Additional Filters: <a href="/Instagrim/Image/Sepia/<%=p.getSUUID()%>">Sepia</a>, <a href="/Instagrim/Image/Negative/<%=p.getSUUID()%>">Negative</div>
-                <div class="comment"><a href="/Instagrim/Image/Comments/<%=p.getSUUID()%>">Comments</a></div>
+                <div class="filters">Additional Filters: <a href="/Instagrim-arp/Image/Sepia/<%=p.getSUUID()%>">Sepia</a>, <a href="/Instagrim-arp/Image/Negative/<%=p.getSUUID()%>">Negative</div>
+                <div class="comment"><a href="/Instagrim-arp/Image/Comments/<%=p.getSUUID()%>">Comments</a></div>
                 <div class="interface">
                     <button type="button" onclick="deleteImage('<%=p.getSUUID()%>', '<%=owner%>');">Delete</button>
                     <button type="button" onclick="showEditTags('<%=p.getSUUID()%>');" id="<%=p.getSUUID()%>">Edit Tags</button>
@@ -128,19 +128,9 @@
             }
         %>
         </article>
-<!--        <div id="confirmDelete" title="Delete this image?">
-            
-            <p>This will delete the image permanently, are you sure?</p>
-        </div>
-        <div id="successfulDelete" title="Image Successfully Deleted">
-            <p>The image was successfully deleted</p>
-        </div>
-        <div id="errorDelete" title="Error">
-            <p>There was an error deleting the image</p>
-        </div>    -->
         <footer>
             <ul>
-                <li class="footer"><a href="/Instagrim">Home</a></li>
+                <li class="footer"><a href="/Instagrim-arp">Home</a></li>
             </ul>
         </footer>
     </body>
