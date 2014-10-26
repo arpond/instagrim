@@ -6,12 +6,12 @@
 
 
 
-<%@page import="uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn"%>
+<%@page import="uk.ac.dundee.computing.arp.instagrim.stores.LoggedIn"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.Set" %>
 <%@page import="java.util.Date" %>
 <%@page import="java.util.Iterator" %>
-<%@page import="uk.ac.dundee.computing.aec.instagrim.stores.UserDetails" %>
+<%@page import="uk.ac.dundee.computing.arp.instagrim.stores.UserDetails" %>
 <!DOCTYPE html>
 <html>
     <head>

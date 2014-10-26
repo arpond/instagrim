@@ -6,8 +6,8 @@
 
 <%@page import="java.util.HashSet"%>
 <%@page import="java.util.Iterator"%>
-<%@page import="uk.ac.dundee.computing.aec.instagrim.stores.Pic"%>
-<%@page import="uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn"%>
+<%@page import="uk.ac.dundee.computing.arp.instagrim.stores.Pic"%>
+<%@page import="uk.ac.dundee.computing.arp.instagrim.stores.LoggedIn"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
