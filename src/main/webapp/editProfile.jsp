@@ -6,6 +6,7 @@
 
 
 
+<%@page import="uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.Set" %>
 <%@page import="java.util.Date" %>
@@ -21,35 +22,34 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>   
     <body>
-        <header>
-            <h1>InstaGrim ! </h1>
-            <h2>Your world in Black and White</h2>
-        </header>
-        <nav>
-            <ul id="mainmenu">
-                    <%
+        <header class="center">        
+            <div id="headline"><span id="title">InstaGrim ! </span><span id="tagline">Your world in Black and White</span></div>
+            <nav>
+                <ul id="mainmenu" class="center">
+                        <%
 
-                LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
-                if (lg != null) {
-                    String UserName = lg.getUsername();
-                    if (lg.getlogedin()) {
+                    LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+                    if (lg != null) {
+                        String UserName = lg.getUsername();
+                        if (lg.getlogedin()) {
+                        %>
+                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim/upload.jsp">Upload</a></li>
+                    <li><a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a></li>
+                    <li><a href="/Instagrim/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
+                    <li><a class ="active" href="/Instagrim/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
+                    <li><a href="/Instagrim/Logout">Logout</a></li>
+                    <%  }
+                    }else{
                     %>
-                <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                <li><a href="upload.jsp">Upload</a></li>
-                <li><a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a></li>
-                <li><a href="/Instagrim/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
-                <li><a href="/Instagrim/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
-                <li><a href="/Instagrim/Logout">Logout</a></li>
-                <%  }
-                }else{
-                %>
-                <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                <li><a href="register.jsp">Register</a></li>
-                <li><a href="login.jsp">Login</a></li>
-                <%
-                }%>
-            </ul>
-        </nav>
+                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim/register.jsp">Register</a></li>
+                    <li><a href="/Instagrim/login.jsp">Login</a></li>
+                    <%
+                    }%>
+                </ul>
+            </nav>        
+        </header>
             <%
             UserDetails userDetails = (UserDetails) request.getAttribute("details");
             String owner = userDetails.getUsername();
@@ -93,28 +93,35 @@
             
             //Date joined = (Date) request.getAttribute("joined");
             %>
-            
-            <form method="POST" enctype="multipart/form-data" action="/Instagrim/Profile/View/<%=owner%>">
-                Upload Profile Picture: <input type="file" name="upfile"><br/><br/>
-                <input type="submit" value="upload" name="action"> to upload the file!
-                <input type="hidden" name="owner" value="<%=owner%>">
-            </form>
-            
-            <form id="updateForm" method="POST"  action="/Instagrim/Profile/View/<%=owner%>" >
-                <ul>
-                    <li>Profile: <%=owner%></li>
-                    <li>First Name: <input type="text" name="firstname" value="<%=firstname%>"></li>
-                    <li>Last Name : <input type="text" name="lastname" value="<%=lastname%>"></li>
-                    <li>Street: <input type="text" name="street" value="<%=street%>"></li>
-                    <li>City: <input type="text" name="city" value="<%=city%>"></li>
-                    <li>Zip: <input type="text" name="zip" value="<%=zipcode%>"></li>
-                    <li>Emails:  <input type="text" name="email" value="<%=mails%>"></li>
-                    <input type="hidden" name="owner" value="<%=owner%>">
-                </ul>
-                <br/>
-                <input type="submit" value="update" name="action"> 
-            </form>
-                <h2 onclick="updateProfile('<%=owner%>')">Click Me</h2>
-        </header>
+        <article>
+            <h2>Profile: <%=owner%></h2>
+            <div id="profile">
+                <div id="updateAvatar">
+                    <h3>Upload Avatar</h3>
+                    <form method="POST" enctype="multipart/form-data" action="/Instagrim/Profile/View/<%=owner%>" id="upload">
+                        <ul>
+                            <li><label>Upload Profile Picture:</label><input type="file" name="upfile"></li>
+                            <li><input type="submit" value="upload" name="action" id="uploadButton" class="button"> to upload the file!</li>
+                        </ul>
+                        <input type="hidden" name="owner" value="<%=owner%>">
+                    </form>
+                </div>
+                <div id="updateProfile">
+                    <h3>Update Profile</h3>
+                    <form id="updateForm" method="POST"  action="/Instagrim/Profile/View/<%=owner%>" >
+                        <ul>
+                            <li><label class="input">First Name </label><input type="text" name="firstname" value="<%=firstname%>"></li>
+                            <li><label class="input">Last Name </label><input type="text" name="lastname" value="<%=lastname%>"></li>
+                            <li><label class="input">Street </label><input type="text" name="street" value="<%=street%>"></li>
+                            <li><label class="input">City </label><input type="text" name="city" value="<%=city%>"></li>
+                            <li><label class="input">Zip </label><input type="text" name="zip" value="<%=zipcode%>"></li>
+                            <li><label class="input">Emails  </label><input type="text" name="email" value="<%=mails%>"></li>
+                            <input type="hidden" name="owner" value="<%=owner%>" id="updateButton">
+                        </ul>
+                        <input type="submit" value="update" name="action" class="button"> 
+                    </form>
+                </div>
+            </div>
+        </article>
     </body>
 </html>

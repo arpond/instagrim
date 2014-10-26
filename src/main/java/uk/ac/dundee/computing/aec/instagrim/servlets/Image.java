@@ -360,7 +360,7 @@ public class Image extends HttpServlet {
             newTags.add(tag);
         }
         HashSet<String> toDelete = new HashSet<String>(oldTags);
-        HashSet<String> toAdd = new HashSet<String>(newTags);
+        HashSet<String> toAdd = new HashSet<String>(newTags)    ;
         toDelete.removeAll(newTags);
         toAdd.removeAll(oldTags);
         

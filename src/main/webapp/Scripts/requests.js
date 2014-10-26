@@ -33,7 +33,7 @@ function deleteImage(picid, owner)
     success: function (data, textStatus, xhr) {
         if (data.success)
         {   
-            $("div." + picid).hide();
+            $("div#pic" + picid).hide();
         }
         alert(data.message);
     },
@@ -82,7 +82,7 @@ function updateTags(picID, owner)
     success: function (data, textStatus, xhr) {
         if (data.success)
         {   
-            $("h3." + picID).text("Tags: " + tags);
+            $("span." + picID).text("Tags: " + tags);
             $("div#tag" + picID).hide();
             $(id).val(tags);
         }

@@ -6,6 +6,7 @@
     TODO - Add space for errors for redirect to here from failed registration
 --%>
 
+<%@page import="uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -15,47 +16,44 @@
         <link rel="stylesheet" type="text/css" href="/Instagrim/Styles.css" />
     </head>
     <body>
-        <header>
-        <h1>InstaGrim ! </h1>
-        <h2>Your world in Black and White</h2>
-        </header>
-        <nav>
-            <ul id="mainmenu">
-                    <%
+        <header class="center">        
+            <div id="headline"><span id="title">InstaGrim ! </span><span id="tagline">Your world in Black and White</span></div>
+            <nav>
+                <ul id="mainmenu" class="center">
+                        <%
 
-                LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
-                if (lg != null) {
-                    String UserName = lg.getUsername();
-                    if (lg.getlogedin()) {
+                    LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+                    if (lg != null) {
+                        String UserName = lg.getUsername();
+                        if (lg.getlogedin()) {
+                        %>
+                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim/upload.jsp">Upload</a></li>
+                    <li><a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a></li>
+                    <li><a href="/Instagrim/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
+                    <li><a href="/Instagrim/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
+                    <li><a href="/Instagrim/Logout">Logout</a></li>
+                    <%  }
+                    }else{
                     %>
-                <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                <li><a href="upload.jsp">Upload</a></li>
-                <li><a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a></li>
-                <li><a href="/Instagrim/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
-                <li><a href="/Instagrim/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
-                <li><a href="/Instagrim/Logout">Logout</a></li>
-                <%  }
-                }else{
-                %>
-                <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                <li><a href="register.jsp">Register</a></li>
-                <li><a href="login.jsp">Login</a></li>
-                <%
-                }%>
-            </ul>
-        </nav>
-       
+                    <li><a href="/Instagrim/Images/">Latest Images</a></li>
+                    <li><a class="active" href="/Instagrim/register.jsp">Register</a></li>
+                    <li><a href="/Instagrim/login.jsp">Login</a></li>
+                    <%
+                    }%>
+                </ul>
+            </nav>        
+        </header>
         <article>
             <h3>Register as user</h3>
-            <form method="POST"  action="Register">
+            <form method="POST"  action="Register" id="register">
                 <ul>
-                    <li>User Name <input type="text" name="username"></li>
-                    <li>Password <input type="password" name="password"></li>
-                    <li>Confirm Password <input type="password" name="confirmpass"></li>
-                    <li>Email  <input type="text" name="email"></li>
+                    <li><label class="input">User Name</label> <input type="text" name="username"></li>
+                    <li><label class="input">Password</label> <input type="password" name="password"></li>
+                    <li><label class="input">Confirm Password</label> <input type="password" name="confirmpass"></li>
+                    <li><label class="input">Email</label>  <input type="text" name="email"></li>
                 </ul>
-                <br/>
-                <input type="submit" value="Register"> 
+                <input type="submit" value="Register" class="button" id="registerButton"> 
             </form>
 
         </article>

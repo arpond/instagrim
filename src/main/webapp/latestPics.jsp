@@ -17,36 +17,35 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body>
-        <header>
-            <h1>InstaGrim ! </h1>
-            <h2>Your world in Black and White</h2>
-        </header>
-        <nav>
-            <ul id="mainmenu">
-                    <%
+        <header class="center">        
+            <div id="headline"><span id="title">InstaGrim ! </span><span id="tagline">Your world in Black and White</span></div>
+            <nav>
+                <ul id="mainmenu" class="center">
+                        <%
 
-                LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
-                if (lg != null) {
-                    String UserName = lg.getUsername();
-                    if (lg.getlogedin()) {
+                    LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
+                    if (lg != null) {
+                        String UserName = lg.getUsername();
+                        if (lg.getlogedin()) {
+                        %>
+                    <li><a class="active" href="/Instagrim/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim/upload.jsp">Upload</a></li>
+                    <li><a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a></li>
+                    <li><a href="/Instagrim/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
+                    <li><a href="/Instagrim/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
+                    <li><a href="/Instagrim/Logout">Logout</a></li>
+                    <%  }
+                    }else{
                     %>
-                <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                <li><a href="upload.jsp">Upload</a></li>
-                <li><a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a></li>
-                <li><a href="/Instagrim/Profile/View/<%=lg.getUsername()%>">View Profile</a></li>
-                <li><a href="/Instagrim/Profile/Edit/<%=lg.getUsername()%>">Edit Profile</a></li>
-                <li><a href="/Instagrim/Logout">Logout</a></li>
-                <%  }
-                }else{
-                %>
-                <li><a href="/Instagrim/Images/">Latest Images</a></li>
-                <li><a href="register.jsp">Register</a></li>
-                <li><a href="login.jsp">Login</a></li>
-                <%
-                }%>
-            </ul>
-        </nav>
-        <div id="content">
+                    <li><a class="active" href="/Instagrim/Images/">Latest Images</a></li>
+                    <li><a href="/Instagrim/register.jsp">Register</a></li>
+                    <li><a href="/Instagrim/login.jsp">Login</a></li>
+                    <%
+                    }%>
+                </ul>
+            </nav>        
+        </header>
+        <article>
             <%
             java.util.LinkedList<Pic> lsPics = (java.util.LinkedList<Pic>) request.getAttribute("Pics");
             
@@ -80,17 +79,22 @@
                     }
 
             %>
-            <div class="<%=p.getSUUID()%>">
-                <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
-                <p>Owner: <a href="/Instagrim/Profile/View/<%=p.getOwner()%>" ><%=p.getOwner()%></a></p>
-                <p><a href="/Instagrim/Image/Comments/<%=p.getSUUID()%>">View Comments</a></p>
-                <p><h3 class="<%=p.getSUUID()%>">Tags: <%=tags%></h3>
-                </p>
+            <div id="pic<%=p.getSUUID()%>" class="pic">
+                <div class="thumb">
+                    <span class="shadow">
+                        <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a>
+                    </span>
+                </div>
+                <div class="details">
+                    <div class="tags"><span class="<%=p.getSUUID()%>">Tags: <%=tags%></span><span class="right"></span></div>
+                    <div class="comment"><a href="/Instagrim/Image/Comments/<%=p.getSUUID()%>">Comments</a></div>
+                    <div class="owner">Owner: <a href="/Instagrim/Profile/View/<%=p.getOwner()%>" ><%=p.getOwner()%></a></div>
+                </div>
             </div>
                 <%} 
             }%>
 
-        </div>
+        </article>
         <footer>
             <ul>
                 <li class="footer"><a href="/Instagrim">Home</a></li>
