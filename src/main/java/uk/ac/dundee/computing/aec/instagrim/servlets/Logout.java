@@ -32,6 +32,13 @@ public class Logout extends HttpServlet {
         cluster = CassandraHosts.getCluster();
     }
     
+    /**
+     * Logs out the user
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session=request.getSession();

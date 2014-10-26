@@ -14,10 +14,10 @@ import com.datastax.driver.core.Session;
 import java.util.HashSet;
 import java.util.LinkedList;
 import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
-import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 
 /**
- *
+ * Tag Model
+ * 
  * @author Andrew
  */
 public class TagModel {
@@ -31,10 +31,15 @@ public class TagModel {
         this.cluster = cluster;
     }
     
+    /**
+     * Gets the tags belonging to a picture
+     * @param picid The ID of the picture to get the tags for
+     * @return HashSet of the tags belonging to the picture
+     */
     public HashSet<String> getTags(java.util.UUID picid)
     {
         Session session = cluster.connect("instagrim");
-        HashSet<String> tags = new HashSet<String>();
+        HashSet<String> tags = new HashSet<>();
         PreparedStatement psTagIDs = session.prepare("select tagid from tagpic where picid = ?");        
         BoundStatement bsTagIDs = new BoundStatement(psTagIDs); 
         
@@ -64,6 +69,11 @@ public class TagModel {
         return tags;
     }
     
+    /**
+     * Checks if a tag exists in the db
+     * @param tag The tag to check for
+     * @return If the tag exists
+     */
     public boolean tagExists(String tag)
     {
         Session session = cluster.connect("instagrim");
@@ -79,6 +89,12 @@ public class TagModel {
         return false;
     }
     
+    
+    /**
+     * Gets the id of a tag
+     * @param tag The tag to get the id of
+     * @return UUID of the tag
+     */
     public java.util.UUID getTagID(String tag)
     {
         java.util.UUID tagid = null;
@@ -102,6 +118,12 @@ public class TagModel {
         return tagid;
     }
     
+    
+    /**
+     * Add a new tag to the db
+     * @param tag The tag to add
+     * @return The UUID of the new tag
+     */
     public java.util.UUID addNewTag(String tag)
     {
         System.out.println("Adding " + tag + " to tags");
@@ -115,9 +137,14 @@ public class TagModel {
         return tagID;
     }
     
+    /**
+     * Gets the top tags
+     * @param limit The number of the top tags you wish to retrieve
+     * @return LinkedList of the tags
+     */
     public LinkedList<String> getTopTags(int limit)
     {
-        LinkedList<String> topTags = new LinkedList<String>();
+        LinkedList<String> topTags = new LinkedList<>();
         Session session = cluster.connect("instagrim");
         PreparedStatement psTopTags = session.prepare("Select * from tags ORDER BY count LIMIT ?");
         BoundStatement bsTopTags = new BoundStatement(psTopTags);

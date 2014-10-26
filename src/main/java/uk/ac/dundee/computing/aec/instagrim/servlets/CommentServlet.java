@@ -22,7 +22,8 @@ import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 import uk.ac.dundee.computing.aec.instagrim.models.CommentModel;
 
 /**
- *
+ * Comment Servlet
+ * 
  * @author Andrew
  */
 @WebServlet(name = "AddComment", urlPatterns = {"/AddComment"})
@@ -36,6 +37,13 @@ public class CommentServlet  extends HttpServlet {
         cluster = CassandraHosts.getCluster();
     }
     
+    /**
+     * Adds a comment to a a picture
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {

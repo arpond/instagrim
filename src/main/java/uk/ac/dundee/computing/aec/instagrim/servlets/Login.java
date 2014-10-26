@@ -8,7 +8,6 @@ package uk.ac.dundee.computing.aec.instagrim.servlets;
 
 import com.datastax.driver.core.Cluster;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -79,7 +78,7 @@ public class Login extends HttpServlet {
             session.setAttribute("LoggedIn", lg);
             System.out.println("Session in servlet "+session);
             RequestDispatcher rd=request.getRequestDispatcher("index.jsp");
-	    rd.forward(request,response);
+	    rd.forward(request,response);   
             
         }else{
             Error.error("Your username or password was invalid please try again.", request, response);

@@ -26,14 +26,14 @@ import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.lib.Error;
 import uk.ac.dundee.computing.aec.instagrim.lib.UserPermission;
-import uk.ac.dundee.computing.aec.instagrim.models.PicModel;
 import uk.ac.dundee.computing.aec.instagrim.models.UserModel;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 import uk.ac.dundee.computing.aec.instagrim.stores.UserDetails;
 
 /**
- *
+ * Profile Servlet
+ * 
  * @author Andrew
  */
 @WebServlet(urlPatterns = {
@@ -62,6 +62,13 @@ public class Profile extends HttpServlet {
         cluster = CassandraHosts.getCluster();
     }
 
+    /**
+     * Handles GETs
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String args[] = Convertors.SplitRequestPath(request);
@@ -96,6 +103,14 @@ public class Profile extends HttpServlet {
         }
     }
 
+    /**
+     * Displays the profile picture
+     * @param owner The owner of the profile
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     private void displayProfilePic(String owner, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         UserModel um = new UserModel();
         um.setCluster(cluster);
@@ -121,6 +136,14 @@ public class Profile extends HttpServlet {
         out.close();
     }
 
+    /**
+     * Displays the profile
+     * @param owner The owner of the profile
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     private void viewProfile(String owner, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         UserModel user = new UserModel();
         user.setCluster(cluster);
@@ -140,6 +163,14 @@ public class Profile extends HttpServlet {
         view.include(request, response);
     }
 
+    /**
+     * Gets the previous details of a profile and passes a user to the edit profile page
+     * @param owner The owner of the profile
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     private void editProfile(String owner, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         UserModel user = new UserModel();
         user.setCluster(cluster);
@@ -160,6 +191,13 @@ public class Profile extends HttpServlet {
         view.forward(request, response);
     }
 
+    /**
+     * Updates a user's profile
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     private void updateProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String owner = request.getParameter("owner");
         String firstname = request.getParameter("firstname");
@@ -211,6 +249,13 @@ public class Profile extends HttpServlet {
         response.sendRedirect("/Instagrim/Profile/View/" + owner);
     }
 
+    /**
+     * Upload a profile picture
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     private void uploadProfilePic(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String owner = request.getParameter("owner");
         UserModel um = new UserModel();
@@ -256,18 +301,25 @@ public class Profile extends HttpServlet {
             }
         }
     }
-
-    @Override
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        System.out.println("In doPut..");
-        String firstname = request.getParameter("firstname");
-        String lastname = request.getParameter("lastname");
-        String street = request.getParameter("street");
-        
-        System.out.println("firstname: " + firstname + " lastname: " + lastname + " street: " + street);
-    }
+//
+//    @Override
+//    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+//    {
+//        System.out.println("In doPut..");
+//        String firstname = request.getParameter("firstname");
+//        String lastname = request.getParameter("lastname");
+//        String street = request.getParameter("street");
+//        
+//        System.out.println("firstname: " + firstname + " lastname: " + lastname + " street: " + street);
+//    }
     
+    /**
+     * Handles POSTS
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

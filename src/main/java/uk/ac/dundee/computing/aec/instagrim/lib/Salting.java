@@ -8,10 +8,17 @@ package uk.ac.dundee.computing.aec.instagrim.lib;
 import java.security.SecureRandom;
 
 /**
- *
+ * Class for salting
+ * 
  * @author Andrew
  */
 public class Salting {
+    
+    /**
+     * Generate salt
+     * 
+     * @return byte array representing the salt
+     */
     public static byte[] generateSalt()
     {
         SecureRandom random = new SecureRandom();
@@ -19,5 +26,4 @@ public class Salting {
         random.nextBytes(salt);
         return salt;
     }
-    
 }

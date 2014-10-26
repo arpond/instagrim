@@ -18,16 +18,11 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.utils.Bytes;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -43,6 +38,7 @@ import uk.ac.dundee.computing.aec.instagrim.lib.*;
 import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 //import uk.ac.dundee.computing.aec.stores.TweetStore;
 
+
 public class PicModel {
 
     Cluster cluster;
@@ -55,6 +51,14 @@ public class PicModel {
         this.cluster = cluster;
     }
 
+    /**
+     * Inserts an image into the database
+     * 
+     * @param b The byte array representing the image
+     * @param type The type of the image
+     * @param name The name of the image
+     * @param user The user who is inserting the image
+     */
     public void insertPic(byte[] b, String type, String name, String user) {
         try {
             Convertors convertor = new Convertors();
@@ -154,6 +158,7 @@ public class PicModel {
                 session.execute(bsDeletePic.bind(picid));
                 session.execute(bsDeletePicUserPicList.bind(user, dateAdded));
                 session.execute(bsDeletePicComments.bind(picid));
+                // Deletes the tags associated with the image
                 while (it.hasNext()) {
                     String tag = (String) it.next();
                     deleteTagFromPic(tag, picid);
@@ -211,6 +216,11 @@ public class PicModel {
         return pad(img, 4);
     }
    
+    /**
+     * Creates a sepia version of the buffered image
+     * @param img Buffered image to make a sepia version of
+     * @return Sepia Buffered image.
+     */
     public static BufferedImage createSepia(BufferedImage img)
     {
         int width = img.getWidth() - 1;
@@ -219,6 +229,11 @@ public class PicModel {
         return img;
     }
     
+    /**
+     * Creates a negative version of the buffered image
+     * @param img Buffered image to make a negative version of
+     * @return Negative Buffered Image
+     */
     public static BufferedImage createNegative(BufferedImage img)
     {
         img = invertImage(img);
@@ -227,9 +242,9 @@ public class PicModel {
    
     /**
      * Taken from http://stackoverflow.com/questions/21899824/java-convert-a-greyscale-and-sepia-version-of-an-image-with-bufferedimage
-     * @param img
-     * @param sepiaIntensity
-     * @return 
+     * @param img Image to make sepia
+     * @param sepiaIntensity 
+     * @return Sepia buffered image
      */
     public static BufferedImage toSepia(BufferedImage img, int sepiaIntensity) 
     {
@@ -289,6 +304,11 @@ public class PicModel {
         return sepia;
     }
     
+    /**
+     * Invert the buffered image 
+     * @param img Buffered image to invert
+     * @return Inverted buffered image
+     */
     public static BufferedImage invertImage(BufferedImage img) 
     {
         for (int x = 0; x < img.getWidth(); x++) 
@@ -307,6 +327,11 @@ public class PicModel {
     }
 
    
+    /**
+     * Get the pics for a user
+     * @param User The user to get the pic for
+     * @return LinkedList of pics which belong to the user
+     */
     public java.util.LinkedList<Pic> getPicsForUser(String User) {
         java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
         Session session = cluster.connect("instagrim");
@@ -334,6 +359,11 @@ public class PicModel {
         return Pics;
     }
     
+    /**
+     * Add as a tag to a picture
+     * @param tag Tag to add
+     * @param picid ID of the picture to add the tag to
+     */
     public void addTagToPic(String tag, java.util.UUID picid)
     {
         System.out.println("Adding " + tag + " to pic");
@@ -358,6 +388,11 @@ public class PicModel {
         session.close();
     }
     
+    /**
+     * Deletes a tag from a picture
+     * @param tag Name of the tag to delete
+     * @param picid ID of the picture to remove the tag from
+     */
     public void deleteTagFromPic(String tag, java.util.UUID picid)
     {
         System.out.println("Deleting " + tag + " from pic");
@@ -374,6 +409,11 @@ public class PicModel {
         session.close();
     }
 
+    /**
+     * Get the list of picture with the matched tag
+     * @param tag The tag to find matching pictures for
+     * @return LinkedList of pictures matching the tag
+     */
     public LinkedList<Pic> getTaggedPics(String tag)
     {
         java.util.LinkedList<Pic> pics = new java.util.LinkedList<>();
@@ -401,11 +441,16 @@ public class PicModel {
         return pics;
     }
 
+    /**
+     * Gets the latest 50 pictures added
+     * 
+     * @return LinkedList of pics which are the last 50 pictures added
+     */
     public LinkedList<Pic> getLatestPics()
     {
-        LinkedList<Pic> latest = new LinkedList<Pic>();
+        LinkedList<Pic> latest = new LinkedList<>();
         Session session = cluster.connect("instagrim");
-        PreparedStatement psLatest = session.prepare("select picid, user from userpiclist Limit 64");
+        PreparedStatement psLatest = session.prepare("select picid, user from userpiclist Limit 50");
         BoundStatement bsLatest = new BoundStatement(psLatest);
         ResultSet rs = null;
         rs = session.execute(bsLatest);
@@ -431,7 +476,13 @@ public class PicModel {
                         //pic.setTags(tm.getTags(UUID));
         return latest;
     }
-    
+
+    /**
+     * Gets a picture
+     * @param image_type The type of the image
+     * @param picid The picid to get
+     * @return Pic representing the picture
+     */
     public Pic getPic(int image_type, java.util.UUID picid) {
         Session session = cluster.connect("instagrim");
         System.out.println("Getting picture..");
@@ -526,6 +577,12 @@ public class PicModel {
         return p;
     } 
     
+    /**
+     * Inserts a filtered image into the db
+     * @param image_type The image type
+     * @param bArray byte array of the iamge
+     * @param picid  picid of the image to add the filtered versions to
+     */
     private void insertFiltered(int image_type, byte[] bArray,  java.util.UUID picid)
     {
         Session session = cluster.connect("instagrim");
@@ -551,18 +608,26 @@ public class PicModel {
         session.close();
     }
     
-    private byte[] applyFilter(int image_type, String type, byte[] temp) throws IOException
+    /**
+     * Applies a filter to a byte array
+     * @param filter_type The type of the filter to use
+     * @param type The type of image
+     * @param temp Byte array to apply the filter to
+     * @return
+     * @throws IOException 
+     */
+    private byte[] applyFilter(int filter_type, String type, byte[] temp) throws IOException
     {
         InputStream in = new ByteArrayInputStream(temp);
         BufferedImage BI = ImageIO.read(in);
         BufferedImage filtered = null;
 
-        if (image_type == Convertors.DISPLAY_SEPIA)
+        if (filter_type == Convertors.DISPLAY_SEPIA)
         {
             System.out.println("Converting to Sepia..");
              filtered = createSepia(BI);
         }
-        else if (image_type == Convertors.DISPLAY_NEGATIVE)
+        else if (filter_type == Convertors.DISPLAY_NEGATIVE)
         {
             System.out.println("Converting to negative...");
             filtered = createNegative(BI);

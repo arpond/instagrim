@@ -15,7 +15,6 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.UDTValue;
 import com.datastax.driver.core.UserType;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,17 +28,15 @@ import java.util.HashSet;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
-import uk.ac.dundee.computing.aec.instagrim.lib.AeSimpleSHA1;
-import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.lib.ApSimpleSHA256;
 import uk.ac.dundee.computing.aec.instagrim.lib.Salting;
 import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 import uk.ac.dundee.computing.aec.instagrim.stores.UserDetails;
-import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 
 /**
- *
- * @author Administrator
+ * User Model
+ * 
+ * @author Andrew
  */
 public class UserModel {
             
@@ -48,8 +45,15 @@ public class UserModel {
         
     }
     
-    // TODO - Add and store salt
-    
+    /**
+     * Registers a user
+     * 
+     * @param username Username of the new user
+     * @param password Password of the new user
+     * @param email Email of the new user
+     * @param context The current context 
+     * @return String representing success or failure
+     */
     public String RegisterUser(String username, String password, String email, ServletContext context){
         /*AeSimpleSHA1 sha1handler=  new AeSimpleSHA1();
         String encodedPassword=null;
@@ -125,8 +129,14 @@ public class UserModel {
         return "success";
     }
     
-    // Improve no images returned
-    
+   
+    /**
+     * Checks if a user is valid
+     * 
+     * @param username Username supplied
+     * @param password Password supplied
+     * @return If the user is valid or invalid
+     */
     public boolean IsValidUser(String username, String password){
          
         ApSimpleSHA256 sha256handler = new ApSimpleSHA256();
@@ -140,7 +150,7 @@ public class UserModel {
                 boundStatement.bind( // here you are binding the 'boundStatement'
                         username));
         if (rs.isExhausted()) {
-            System.out.println("No Images returned");
+            System.out.println("No USer returned");
             return false;
         } else {
             for (Row row : rs) {
@@ -166,10 +176,17 @@ public class UserModel {
     
     return false;  
     }
-       public void setCluster(Cluster cluster) {
+    
+    public void setCluster(Cluster cluster) {
         this.cluster = cluster;
     }
        
+    /**
+     * Gets the user details for the username provided
+     * 
+     * @param username The username to get the details of
+     * @return USerDetails of the user
+     */   
     public UserDetails getUserDetails(String username)
     {
         System.out.println("Getting user details..");
@@ -222,7 +239,18 @@ public class UserModel {
         return userDetails;
     }
     
-    public Boolean updateUserDetails(String username, String firstname, String lastname, String emails, String street, String city, int zip)
+    /**
+     * Updates a users details
+     * @param username Username of the details to update
+     * @param firstname First name to update to
+     * @param lastname Last name to update to
+     * @param emails Email to update to
+     * @param street Street to update to
+     * @param city City to update to
+     * @param zip zip to update to
+     * @return 
+     */
+    public void updateUserDetails(String username, String firstname, String lastname, String emails, String street, String city, int zip)
     {
         Session session = cluster.connect("instagrim");
        
@@ -249,10 +277,14 @@ public class UserModel {
         }
         
         session.execute(bs.bind(firstname,lastname,mails,addresses,username));
-        
-        return true;
     }
     
+    /**
+     * Insert a profile picture for a user
+     * @param b The bytes representing the image
+     * @param user The user whose profile to update
+     * @param type The file type of the image
+     */
     public void insertProfilePic(byte[] b, String user, String type) 
     {
         System.out.println("wrapping");
@@ -267,6 +299,11 @@ public class UserModel {
         session.close();
     }
     
+    /**
+     * Get a profile picture of a user
+     * @param user the user whose profile picture to get
+     * @return The profile picture
+     */
     public Pic getProfilePic(String user)
     {
         System.out.println("Getting Profile Pic..");

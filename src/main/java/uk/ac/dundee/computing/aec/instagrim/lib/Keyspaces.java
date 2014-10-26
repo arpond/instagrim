@@ -1,7 +1,5 @@
 package uk.ac.dundee.computing.aec.instagrim.lib;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import com.datastax.driver.core.*;
 

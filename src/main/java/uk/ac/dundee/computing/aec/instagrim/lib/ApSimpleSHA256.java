@@ -5,17 +5,23 @@
  */
 package uk.ac.dundee.computing.aec.instagrim.lib;
 
-
 import java.io.UnsupportedEncodingException; 
 import java.security.MessageDigest; 
 import java.security.NoSuchAlgorithmException; 
 
 /**
- * Simple SHA256 hash
+ * Class for SHA 256 hash
  * 
+ * @author Andrew
  */
 public class ApSimpleSHA256 {
     
+    /**
+     * Converts the byte array to a Hex string
+     * 
+     * @param data The byte array to convert
+     * @return String representing the byte array in hex
+     */
     public static String convertToHex(byte[] data) { 
         StringBuffer buf = new StringBuffer();
         for (int i = 0; i < data.length; i++) { 
@@ -32,6 +38,14 @@ public class ApSimpleSHA256 {
         return buf.toString();
     } 
     
+    /**
+     * Generate an SHA 256 hash from the text passed
+     * 
+     * @param text String to convert to hash 
+     * @return String of the SHA 256 Hash
+     * @throws NoSuchAlgorithmException
+     * @throws UnsupportedEncodingException 
+     */
     public static String SHA256(String text) throws NoSuchAlgorithmException, UnsupportedEncodingException
     {
         MessageDigest  md;

@@ -32,7 +32,7 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
     "/Tag/*"
 })
 @MultipartConfig
-public class Tags  extends HttpServlet {
+public class Tags extends HttpServlet {
     
     Cluster cluster;
 
@@ -42,6 +42,14 @@ public class Tags  extends HttpServlet {
         cluster = CassandraHosts.getCluster();
     }
     
+    /**
+     * Hadles get requests
+     * 
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {
@@ -72,8 +80,15 @@ public class Tags  extends HttpServlet {
         pm.setCluster(cluster);
         pics = pm.getTaggedPics(tag);
         
+        request.setAttribute("Tag", tag);
         request.setAttribute("Pics", pics);
         RequestDispatcher rd = request.getRequestDispatcher("/tagPics.jsp");
         rd.forward(request, response);
     }    
+
+    @Override
+    public void destroy()
+    {
+        cluster.close();
+    }
 }

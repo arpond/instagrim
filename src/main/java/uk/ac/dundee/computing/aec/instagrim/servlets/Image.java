@@ -44,16 +44,6 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Comment;
     "/Delete/*",
 })
 @MultipartConfig
-
-/** 
- * TODO - Improve when Image doesn't exist (invalid UUID line 122 see /Images/namedoesn'texist, UUID.java 194)
- * TODO - Improve when "/Image/" and "/Image" (array out of bounds line 94)
- * TODO - Improve when "/Images/" and "/Images" (array out of bounds line 97)
- * TODO - Improve when "/Thumb/" and "/Thumb" (array out of bounds line 100)
- * TODO - Improve when Thumb doesn't exist (invalid UUID line 122, UUID.java 194)
- * TODO - Improve how unrecognised file types are handled
- */
-
 public class Image extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -171,6 +161,13 @@ public class Image extends HttpServlet {
         }  
     }
     
+    /**
+     * Display the latest images that have been uploaded
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     private void DisplayLatestImages(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {
         PicModel pm = new PicModel();
@@ -182,6 +179,14 @@ public class Image extends HttpServlet {
         rd.forward(request, response);
     }       
 
+    /**
+     * Display the list of images belonging to this user
+     * @param owner Owner to get the pictures of
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     private void DisplayImageList(String owner, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
@@ -207,6 +212,15 @@ public class Image extends HttpServlet {
         rd.forward(request, response);
     }
     
+    /**
+     * Display an image
+     * @param type The type of image to display
+     * @param Image The id of the image
+     * @param response
+     * @param request
+     * @throws ServletException
+     * @throws IOException 
+     */
     private void DisplayImage(int type,String Image, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
@@ -235,6 +249,14 @@ public class Image extends HttpServlet {
         out.close();
     }
     
+    /**
+     * Display the comments for an image
+     * @param image The ID of the image
+     * @param response
+     * @param request
+     * @throws ServletException
+     * @throws IOException 
+     */
     public void DisplayComments(String image, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException
     {
         System.out.println("Comments");
@@ -254,6 +276,7 @@ public class Image extends HttpServlet {
      * 
      * 
      * @param picid The id of the image to delete
+     * @param owner The owner of the image
      * @param request the http servlet request
      * @param response the http servlet response
      * @throws ServletException
@@ -331,6 +354,11 @@ public class Image extends HttpServlet {
         }
     }
     
+    /**
+     * Update the tags on an image
+     * @param picid ID of the image
+     * @param tags The tags to update to.
+     */
     private void updateTags(String picid, String[] tags)
     {   
         System.out.println("Updating Tags..");
@@ -374,6 +402,13 @@ public class Image extends HttpServlet {
         }
     }
     
+    /**
+     * Do Put for updating tags
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
@@ -413,6 +448,13 @@ public class Image extends HttpServlet {
         }
     }
     
+    /**
+     * Do Delete method for deleting images
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {         
@@ -436,6 +478,13 @@ public class Image extends HttpServlet {
         }
     }
 
+    /**
+     * Do Post for uploading images
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = (String) request.getParameter("action");

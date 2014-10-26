@@ -17,7 +17,8 @@ import java.util.UUID;
 import uk.ac.dundee.computing.aec.instagrim.stores.Comment;
 
 /**
- *
+ * Model for comments
+ * 
  * @author Andrew
  */
 public class CommentModel {
@@ -31,6 +32,13 @@ public class CommentModel {
         this.cluster = cluster;
     }
 
+    /**
+     * Inserts a comment into the database
+     * 
+     * @param user String representing the author of the comment
+     * @param pictureID String representing the id of the picture
+     * @param comment String representing the comment
+     */
     public void insertComment(String user, String pictureID, String comment)
     {
         Session session = cluster.connect("instagrim");
@@ -45,6 +53,12 @@ public class CommentModel {
         session.close();
     }
     
+    /**
+     * Fetches the comments for a picture from the db
+     * 
+     * @param picid The id of the picture to fetch the comments for.
+     * @return The array list of comments for this picture
+     */
     public ArrayList<Comment> getComments(java.util.UUID picid)
     {
         Session session = cluster.connect("instagrim");
@@ -72,7 +86,5 @@ public class CommentModel {
             }
         }
         return comments;
-    }
-    
-    
+    } 
 }

@@ -12,15 +12,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- *
+ * Error class
+ * 
  * @author Andrew
  */
 public class Error {
     
+    /**
+     * Method for forwarding to the error page with an error
+     * 
+     * @param mess The error message to pass to the error page
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
     public static void error(String mess, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("error", mess);
         RequestDispatcher view = request.getRequestDispatcher("/error.jsp");
         view.forward(request, response);
-        return;
     }
 }
