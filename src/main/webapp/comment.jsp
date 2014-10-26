@@ -43,42 +43,44 @@
                 </ul>
             </nav>        
         </header>
-        <%
-            String picID = (String) request.getAttribute("picture");
-            ArrayList<Comment> comments = (ArrayList<Comment>) request.getAttribute("comments");
-        %>
-        <p>
-            <img style="-webkit-user-select: none; cursor: zoom-in;" src="/Instagrim/Image/<%=picID%>">
-        </p>
-        <%
-            if (comments == null)
-            {
-        %>
-        <h3>No comments</h3>
-        <%
-            }
-            else
-            {
-                for (Comment comment : comments)
+        <article>
+            <%
+                String picID = (String) request.getAttribute("picture");
+                ArrayList<Comment> comments = (ArrayList<Comment>) request.getAttribute("comments");
+            %>
+            <p>
+                <img style="-webkit-user-select: none; cursor: zoom-in; max-width: 800px" src="/Instagrim/Image/<%=picID%>">
+            </p>
+            <%
+                if (comments == null)
                 {
-        %>
-        <h3><%=comment.getAuthor()%> wrote: </h3>
-        <p>
-            <%=comment.getComment()%>
-        </p>
-        <h3>On: <%=comment.getWrittenOn().toString()%></h3>
-        <%
+            %>
+            <h3>No comments</h3>
+            <%
                 }
-            }
-        %>
-        
-        <form method="POST"  action="/Instagrim/AddComment">
-            <textarea name="comment" cols="50" rows="5">
-            Enter your comment
-            </textarea>
-            <br/>
-            <input type="submit" value="AddComment"> 
-            <input type="hidden" name="picID" value="<%=picID%>">
-        </form>
+                else
+                {
+                    for (Comment comment : comments)
+                    {
+            %>
+            <h3><%=comment.getAuthor()%> wrote: </h3>
+            <p>
+                <%=comment.getComment()%>
+            </p>
+            <h6>On: <%=comment.getWrittenOn().toString()%></h6>
+            <%
+                    }
+                }
+            %>
+
+            <form method="POST"  action="/Instagrim/AddComment">
+                <textarea name="comment" cols="50" rows="5">
+                Enter your comment
+                </textarea>
+                <br/>
+                <input type="submit" value="AddComment"> 
+                <input type="hidden" name="picID" value="<%=picID%>">
+            </form>
+        </article>
     </body>
 </html>

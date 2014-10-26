@@ -70,7 +70,8 @@
                         it = tagSet.iterator();
                         while (it.hasNext())
                         {
-                            tags += (String) it.next();
+                            String next = (String) it.next();
+                            tags += "<a href=\"\\Instagrim\\Tag\\" + next + "\">" + next + "</a>";
                             if (it.hasNext())
                             {
                                 tags += ",";

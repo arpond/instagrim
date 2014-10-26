@@ -24,7 +24,7 @@
             <nav>
                 <ul id="mainmenu" class="center">
                         <%
-
+                    
                     LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn");
                     if (lg != null) {
                         String UserName = lg.getUsername();
@@ -47,51 +47,56 @@
                 </ul>
             </nav>        
         </header>
-        <%
-            java.util.LinkedList<Pic> lsPics = (java.util.LinkedList<Pic>) request.getAttribute("Pics");
+        <article>
+            <% String tag = (String) request.getAttribute("Tag");
+            %>
             
-            if (lsPics == null || lsPics.isEmpty()) {
-        %>
-        <p>No Pictures found</p>
-        <%
-        } 
-        else 
-        {
-            Iterator<Pic> iterator;
-            iterator = lsPics.iterator();
-            while (iterator.hasNext()) 
+            <h1>Pictures with <%=tag%> tag</h1>
+            <%
+                java.util.LinkedList<Pic> lsPics = (java.util.LinkedList<Pic>) request.getAttribute("Pics");
+                
+                if (lsPics == null || lsPics.isEmpty()) {
+            %>
+            <p>No Pictures found</p>
+            <%
+            } 
+            else 
             {
-                Pic p = (Pic) iterator.next();
-                HashSet<String> tagSet = p.getTags();
-                String tags ="";
-                if (tagSet.isEmpty())
+                Iterator<Pic> iterator;
+                iterator = lsPics.iterator();
+                while (iterator.hasNext()) 
                 {
-                    tags = "No Tags";
-                }
-                else
-                {
-                    Iterator<String> it;
-                    it = tagSet.iterator();
-                    while (it.hasNext())
+                    Pic p = (Pic) iterator.next();
+                    HashSet<String> tagSet = p.getTags();
+                    String tags ="";
+                    if (tagSet.isEmpty())
                     {
-                        tags += (String) it.next();
-                        if (it.hasNext())
+                        tags = "No Tags";
+                    }
+                    else
+                    {
+                        Iterator<String> it;
+                        it = tagSet.iterator();
+                        while (it.hasNext())
                         {
-                            tags += ",";
+                            tags += (String) it.next();
+                            if (it.hasNext())
+                            {
+                                tags += ",";
+                            }
                         }
                     }
-                }
 
-        %>
-        <div class="<%=p.getSUUID()%>">
-            <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
-            <p><h3 class="<%=p.getSUUID()%>">Tags: <%=tags%></h3>
-            </p>
-        </div>
-        <%
-            }
-        }
             %>
-
+            <div class="<%=p.getSUUID()%>">
+                <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
+                <p><h3 class="<%=p.getSUUID()%>">Tags: <%=tags%></h3>
+                </p>
+            </div>
+            <%
+                }
+            }
+                %>
+        </article>
     </body>
 </html>
